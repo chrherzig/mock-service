@@ -27,6 +27,7 @@ cd /deployments
 curl $ARTEFACT_DOWNLOAD_URL -O && printf "\nDone.\n"
 tar -xvf *.tar.gz
 
+ls -ltr /deployments
 mv /deployments/SoapUI* /deployments/SoapUI
 
 # housekeeping
