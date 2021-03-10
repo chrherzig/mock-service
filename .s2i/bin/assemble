@@ -27,10 +27,12 @@ cd /deployments
 curl $ARTEFACT_DOWNLOAD_URL -O && printf "\nDone.\n"
 tar -xvf *.tar.gz
 
+mv /deployments/SoapUI* /deployments/SoapUI
+
 # housekeeping
 rm /deployments/*.tar.gz
 
 # modify mockservicerunner.sh
-cd /deployments/SoapUI*/bin
+cd /deployments/SoapUI/bin
 sed -i 's/-Xms\([0-9]\+\)./-Xms${mock_xms}/g' mockservicerunner.sh
 sed -i 's/-Xmx\([0-9]\+\)./-Xmx${mock_xmx}/g' mockservicerunner.sh
