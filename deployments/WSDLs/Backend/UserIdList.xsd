@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Version: 1.1
+Change history:
+0.1 (01.09.2016): Initial draft
+0.2 (13.09.2016):
+    - TransactionIdentifier added
+    - Request-/ProvideUserDetails changed from synchronous to asynchronous communication
+0.3 (27.10.2016): TransactionIdentifier removed
+0.4 (09.11.2016):
+    - requestId and inResponseToRequestId removed
+    - Unnecessary interleaving removed
+    - Namespaces updated
+0.5 (01.02.2017): Fixed namespaces for validation purpose
+1.0 (23.06.2017): Namespace prefix updated
+1.1 (02.02.2018): messageOriginator removed
+-->
+<xsd:schema
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:cm="http://tsystems.com/etccm/iso12855/common"
+    xmlns:uil="http://tsystems.com/etccm/iso12855/userIdList"
+    targetNamespace="http://tsystems.com/etccm/iso12855/userIdList"
+    elementFormDefault="qualified">
+
+    <xsd:import schemaLocation="Common.xsd" namespace="http://tsystems.com/etccm/iso12855/common" />
+
+    <xsd:element name="InfoExchangeRequestUserIdList">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="informationSenderId" type="cm:Provider" />
+                <xsd:element name="informationRecipientId" type="cm:Provider" />
+                <xsd:element name="userListRequest" minOccurs="1" maxOccurs="unbounded">
+                    <xsd:complexType>
+                        <xsd:sequence>
+                            <xsd:element name="userId" type="cm:UserIdUnrestricted" />
+                            <!-- The toll service provider shall answer the request based on data valid
+                            at the provided point of time and not at the time of the request. -->
+                            <xsd:element name="userIdRequestTime" type="cm:GeneralizedTime" />
+                        </xsd:sequence>
+                    </xsd:complexType>
+                </xsd:element>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="InfoExchangeProvideUserIdList">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="messageOriginator" type="cm:Provider" />
+                <xsd:element name="provideUserIdListADUs" minOccurs="1" maxOccurs="unbounded" type="uil:ProvideUserIdListADU" />
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:complexType name="ProvideUserIdListADU">
+        <xsd:sequence>
+            <xsd:element name="originalUserId" type="cm:UserIdUnrestricted" />
+            <xsd:element name="userIdList" minOccurs="0" maxOccurs="unbounded" type="cm:UserId">
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+
+</xsd:schema>

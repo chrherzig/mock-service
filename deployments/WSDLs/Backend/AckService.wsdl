@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Version: 1.1
+Change history:
+0.1 (17.05.2017): Initial draft
+1.0 (23.06.2017): Namespaces updated
+1.1 (05.07.2017): SoapAction corrected
+-->
+<wsdl:definitions
+    name="AckService" 
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+    xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+    xmlns:cm="http://tsystems.com/etccm/iso12855/common"
+    xmlns:tns="http://tsystems.com/etccm/iso12855/ack"
+    targetNamespace="http://tsystems.com/etccm/iso12855/ack">
+
+    <wsdl:documentation>
+        Copyright (c) 2015 T-Systems International GmbH 
+        All Rights Reserved 
+
+        This software is the confidential and proprietary information of 
+        T-Systems International GmbH ("Confidential Information"). 
+        You shall not disclose such Confidential Information and shall 
+        use it only in accordance with the terms of the license agreement 
+        you entered into with T-Systems International GmbH.
+    </wsdl:documentation>
+
+    <wsdl:types>
+        <xsd:schema targetNamespace="http://tsystems.com/etccm/iso12855/ack">
+            <xsd:import schemaLocation="Common.xsd" namespace="http://tsystems.com/etccm/iso12855/common" />
+            <xsd:include schemaLocation="Ack.xsd" />
+        </xsd:schema>
+    </wsdl:types>
+
+    <wsdl:message name="ackRequest">
+        <wsdl:part name="request" element="tns:InfoExchangeAck" />
+    </wsdl:message>
+    
+    <wsdl:message name="ackResponse">
+        <wsdl:part name="response" element="cm:response" />
+    </wsdl:message>
+
+    <wsdl:portType name="AckServicePT">
+        <wsdl:operation name="sendAck">
+            <wsdl:input message="tns:ackRequest" />
+            <wsdl:output message="tns:ackResponse" />
+        </wsdl:operation>
+    </wsdl:portType>
+
+    <wsdl:binding name="AckServiceBinding" type="tns:AckServicePT">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" />
+        <wsdl:operation name="sendAck">
+            <soap:operation soapAction="http://tsystems.com/etccm/iso12855/AckService/sendAck" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+
+    <wsdl:service name="AckService">
+        <wsdl:port name="AckServicePort" binding="tns:AckServiceBinding">
+            <soap:address location="http://localhost/AckService" />
+        </wsdl:port>
+    </wsdl:service>
+
+</wsdl:definitions>

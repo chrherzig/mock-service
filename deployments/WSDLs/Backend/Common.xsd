@@ -1,0 +1,602 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Version: 1.1
+Change history:
+0.1 (01.09.2016): Initial draft
+0.2 (13.09.2016): TransactionIdentifier added
+0.3 (27.10.2016): TransactionIdentifier removed
+0.4 (27.10.2016): Distance and Duration added
+0.5 (09.11.2016): 
+    - Unnecessary interleaving removed
+    - Namespaces updated
+0.6 (30.01.2017): Enumerations changed to choices to simplify the mapping into the ISO format
+1.0 (23.06.2017): Namespace prefix updated
+1.1 (14.02.2018): Retstriction to the CountyCode added
+-->
+<xsd:schema
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:cm="http://tsystems.com/etccm/iso12855/common"
+    targetNamespace="http://tsystems.com/etccm/iso12855/common"
+    elementFormDefault="qualified">
+
+    <!-- Synchronous response. An empty resposnse indicates the reseption of the request.
+    A SOAP-Fault is returnd in case of an error. -->
+    <xsd:element name="response" type="xsd:token" />
+
+    <xsd:simpleType name="BitString">
+        <xsd:restriction base="xsd:string">
+            <xsd:pattern value="[0-1]{0,}" />
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="NumericString">
+        <xsd:restriction base="xsd:token">
+            <xsd:pattern value="[0-9 ]{0,}" />
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:complexType name="Provider">
+        <xsd:sequence>
+            <xsd:element name="countryCode" type="cm:CountryCode" />
+            <xsd:element name="providerIdentifier" type="cm:IssuerIdentifier" />
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <!-- Value assignment is done in accordance with ISO 3166-1-Alpha-2 and by using the ITA2 alphabet. -->
+    <xsd:simpleType name="CountryCode">
+        <xsd:restriction base="cm:BitString">
+            <xsd:pattern value="(11000|10011|01110|10010|10000|10110|01011|00101|01100|11010|11110|01001|00111|00110|00011|01101|11101|01010|10100|00001|11100|01111|11001|10111|10101|10001){2}" />
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="IssuerIdentifier">
+        <xsd:restriction base="xsd:unsignedShort">
+            <xsd:minInclusive value="0" />
+            <xsd:maxInclusive value="16383" />
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:complexType name="UserId">
+        <xsd:sequence>
+            <xsd:element name="pan" type="cm:PersonalAccountNumber" />
+            <!-- Mandatory for discounted user. Shall not be used otherwise. -->
+            <!-- This value is required for discounted user lists to indicate all vehicles belonging
+            to the same discount group but has no meaning in other types of exception lists. -->
+            <xsd:element name="contractSerialNumber" minOccurs="0" type="xsd:unsignedInt" />
+            <xsd:element name="licencePlateNumber" type="cm:LPN" />
+            <xsd:element name="obeID" type="cm:ObeId" />
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="UserIdUnrestricted">
+        <xsd:sequence>
+            <xsd:element name="pan" minOccurs="0" type="cm:PersonalAccountNumber" />
+            <xsd:element name="contractSerialNumber" minOccurs="0" type="xsd:unsignedInt" />
+            <xsd:element name="licencePlateNumber" minOccurs="0" type="cm:LPN" />
+            <xsd:element name="obeID" minOccurs="0" type="cm:ObeId" />
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <!-- Personal account number structure – according to ISO/IEC 7812-1
+    Issuer identifier number (“BIN”)
+    Major industry identifier (MII, 1 binary coded decimal, BCD)
+    0: reserved for future use by ISO/TC68
+    1: airline sector
+    2: extended airline sector
+    3: travel and tourism sector
+    4: financial banking sector
+    5: financial banking sector
+    6: commerce and banking sector
+    7: petrol industry sector
+    8: telecommunication sector
+    9: reserved for national use
+    Issuer identifier (5 BCD in the second edition of ISO/IEC 7812-1)
+    Account number (max 12 BCD)
+    Control digit (1 BCD)
+    Padding bits, set to 1'B, in order to accomplish a total length of 10 octets. -->
+    <xsd:simpleType name="PersonalAccountNumber">
+        <xsd:restriction base="xsd:hexBinary">
+            <xsd:length value="10" />
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:complexType name="LPN">
+        <xsd:sequence>
+            <xsd:element name="countryCode" type="cm:CountryCode" />
+            <xsd:element name="alphabetIndicator" type="cm:AlphabetIndicator" />
+            <!-- Encoded with AlphabetIndicator (latinAlphabetNo1 recommended). -->
+            <xsd:element name="licencePlateNumber" type="xsd:hexBinary" />
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <!-- ISO/IEC 8859 parts 1 to 10 and ISO/IEC 10646-1 define the characters
+    of the different alphabets included in the AlphabetIndicator type. -->
+    <xsd:complexType name="AlphabetIndicator">
+        <xsd:choice>
+            <xsd:element name="latinAlphabetNo1">
+                <xsd:complexType/>
+            </xsd:element>
+            <xsd:element name="latinAlphabetNo2">
+                <xsd:complexType/>
+            </xsd:element>
+            <xsd:element name="latinAlphabetNo3">
+                <xsd:complexType/>
+            </xsd:element>
+            <xsd:element name="latinAlphabetNo4">
+                <xsd:complexType/>
+            </xsd:element>
+            <xsd:element name="latinCyrillicAlphabet">
+                <xsd:complexType/>
+            </xsd:element>
+            <xsd:element name="latinArabicAlphabet">
+                <xsd:complexType/>
+            </xsd:element>
+            <xsd:element name="latinGreekAlphabet">
+                <xsd:complexType/>
+            </xsd:element>
+            <xsd:element name="latinHebrewAlphabet">
+                <xsd:complexType/>
+            </xsd:element>
+            <xsd:element name="latinAlphabetNo5">
+                <xsd:complexType/>
+            </xsd:element>
+            <xsd:element name="latinAlphabetNo6">
+                <xsd:complexType/>
+            </xsd:element>
+            <xsd:element name="twoOctetBMP">
+                <xsd:complexType/>
+            </xsd:element>
+            <xsd:element name="fourOctetCanonical">
+                <xsd:complexType/>
+            </xsd:element>
+            <xsd:element name="reservedForUse1">   <!-- UTF-8 -->
+                <xsd:complexType/>
+            </xsd:element>
+        </xsd:choice>
+    </xsd:complexType>
+
+    <xsd:complexType name="ObeId">
+        <xsd:sequence>
+            <xsd:element name="manufacturerId" type="xsd:unsignedShort" />
+            <xsd:element name="equipmentObuId" type="cm:EquipmentOBUId" />
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:simpleType name="EquipmentOBUId">
+        <xsd:restriction base="xsd:hexBinary">
+            <xsd:length value="4" />
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <!-- Two letter language code according to ISO 639-1. -->
+    <xsd:simpleType name="LanguageID">
+        <xsd:restriction base="xsd:string">
+            <xsd:length value="2" />
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:complexType name="TollDeclarationId">
+        <xsd:sequence>
+            <xsd:element name="issuerId" type="cm:Provider" />
+            <xsd:element name="declarationId">
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:long">
+                        <xsd:minInclusive value="0" />
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="BillingDetailsId">
+        <xsd:sequence>
+            <xsd:element name="issuerId" type="cm:Provider" />
+            <xsd:element name="billingDetailsNum">
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:long">
+                        <xsd:minInclusive value="0" />
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+            <!-- Must have the same value as BillingDetailsADU.period.endOfPeriod of the used or referenced BillingDetailsADU. -->
+            <xsd:element name="dateOfService" type="cm:GeneralizedTime" />
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="ChargeObjectId">
+        <xsd:sequence>
+            <xsd:element name="chargeReportFinalRecipient" minOccurs="0" type="cm:Provider" />
+            <xsd:element name="chargeObjectDesignation" type="xsd:unsignedInt" />
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="TollEventId">
+        <xsd:sequence>
+            <xsd:element name="counterType">
+                <xsd:complexType>
+                    <xsd:choice>
+                        <xsd:element name="chargeReportCounter" type="xsd:unsignedInt" />
+                        <xsd:element name="transactionCounter">
+                            <xsd:simpleType>
+                                <xsd:restriction base="xsd:unsignedShort">
+                                    <xsd:minInclusive value="0" />
+                                    <xsd:maxInclusive value="4095" />
+                                </xsd:restriction>
+                            </xsd:simpleType>
+                        </xsd:element>
+                    </xsd:choice>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="usageStatementID" type="xsd:unsignedShort" />
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <!-- send (0), revoke (1), adjust (3) -->
+    <xsd:simpleType name="ActionCode">
+        <xsd:restriction base="xsd:unsignedByte">
+            <xsd:pattern value="0|1|3" />
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:complexType name="EFC-ContextMark">
+        <xsd:sequence>
+            <xsd:element name="contractProvider" type="cm:Provider" />
+            <xsd:element name="typeOfContract">
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:hexBinary">
+                        <xsd:length value="2" />
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="contextVersion">
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:unsignedInt">
+                        <xsd:minInclusive value="0" />
+                        <xsd:maxInclusive value="127" />
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <!-- Time in UTC in the format yyyyMMddHHmmss or yyyyMMddHHmmss.S followd by the letter 'Z'.
+    The string representing milliseconds, if present, shall omit all trailing zeros.
+    If the milliseconds part corresponds to 0, this string shall be wholly omitted together with the decimal point.
+    The followings encodings are valid:
+        "19920521000000Z"
+        "19920622123421Z"
+        "19920722132100.3Z"
+    The following encodings are invalid:
+        "19920520240000Z"     (midnight represented incorrectly)
+        "19920622123421.0Z"   (spurious trailing zeros)
+        "19920722132100.30Z"  (spurious trailing zeros) -->
+    <xsd:simpleType name="GeneralizedTime">
+        <xsd:restriction base="xsd:string">
+            <xsd:pattern value="[0-9]{4}((0[1-9])|(1[0-2]))((0[1-9])|([1-2][0-9])|(3[0-1]))(([0-1][0-9])|(2[0-3]))([0-5][0-9]){2}((Z)|(.\d+Z))" />
+        </xsd:restriction>  
+    </xsd:simpleType>
+
+    <xsd:complexType name="Period">
+        <xsd:sequence>
+            <xsd:element name="beginOfPeriod" type="cm:GeneralizedTime" />
+            <xsd:element name="endOfPeriod" type="cm:GeneralizedTime" />
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <!-- The value "{year 1990, month 0, day 0}" is a 16-bit all-zero encoding, and is used to represent "no date". -->
+    <xsd:complexType name="DateCompact">
+        <xsd:sequence>
+            <xsd:element name="year">
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:unsignedShort">
+                        <xsd:minInclusive value="1990" />
+                        <xsd:maxInclusive value="2117" />
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+            <!-- Value zero shall not be used except with 1990. -->
+            <xsd:element name="month">
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:unsignedByte">
+                        <xsd:minInclusive value="0" />
+                        <xsd:maxInclusive value="12" />
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+            <!-- Value zero shall not be used except with 1990. -->
+            <xsd:element name="day">
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:unsignedByte">
+                        <xsd:minInclusive value="0" />
+                        <xsd:maxInclusive value="31" />
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="Duration">
+        <xsd:sequence>
+            <xsd:element name="dur" type="xsd:unsignedInt" />
+            <xsd:element name="durUnit" type="cm:DurUnit" />
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <!-- seconds (0), minutes (1), hours (2), days (3), months (4) -->
+    <xsd:simpleType name="DurUnit">
+        <xsd:restriction base="xsd:unsignedByte">
+            <xsd:minInclusive value="0" />
+            <xsd:maxInclusive value="4" />
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:complexType name="Distance">
+        <xsd:sequence>
+            <xsd:element name="dist" type="xsd:unsignedInt" />
+            <xsd:element name="disUnit" type="cm:DisUnit" />
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <!-- kilometres (0), miles (1), metres (2), yards (3), feet (4), decimetres (5), quartermetres (6) -->
+    <xsd:simpleType name="DisUnit">
+        <xsd:restriction base="xsd:unsignedByte">
+            <xsd:minInclusive value="0" />
+            <xsd:maxInclusive value="6" />
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:complexType name="ExtendedPaymentAmount">
+        <xsd:sequence>
+            <xsd:element name="paymentFeeAmount" type="cm:Int8Signed" />
+            <xsd:element name="paymentFeeUnit" type="cm:PayUnit" />
+            <xsd:element name="vatRate" minOccurs="0">
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:unsignedShort">
+                        <xsd:minInclusive value="0" />
+                        <xsd:maxInclusive value="10000" />
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:simpleType name="Int8Signed">
+        <xsd:restriction base="xsd:long">
+            <xsd:minInclusive value="-562949953421312" />
+            <xsd:maxInclusive value="562949953421311" />
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <!-- The unique designation of a Currency as defined in ISO 4217 using the ISO numeric binary coded decimal representation.
+    The code can also express a company specific token or a "charging unit code" as used in the freight.unit in which the fee is expressed.
+    Value Assignment:
+    '0xxx'H Currency in main units
+    '1xxx'H Currency in minor units of 10 :1 ('dime')
+    '2xxx'H Currency in minor units of 100 :1 ('cents')
+    '3xxx'H Currency in minor units of 1000 :1
+    '4xxx'H Currency in 'major' units / 10 (e.g. 10 Belgian Francs)
+    '5xxx'H Currency in 'major' units / 100 (e.g. 100 Italian Lire)
+    '6xxx'H Currency in 'major' units / 1000
+    '7xxx'H Currency in 'major' units / 10000
+    '8xxx'H Currency in 'major' units / 100000 where xxx is the BCD representation of "Currency" as defined in ISO 4217
+    '9xxx'H Tokens where xxx is Purse Provider specific coding.
+    'Axxx'H Charging Unit Codes, denoting quantification of the service provided (e.g. man-hours) -->
+    <xsd:simpleType name="PayUnit">
+        <xsd:restriction base="xsd:hexBinary">
+            <xsd:length value="2" />
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:complexType name="PaymentMeans">
+        <xsd:sequence>
+            <xsd:element name="personalAccountNumber" type="cm:PersonalAccountNumber" />
+            <xsd:element name="paymentMeansExpiryDate" type="cm:DateCompact" />
+            <!-- Issuer's specified restrictions, on the geographic usage and services allowed for the applications -->
+            <xsd:element name="paymentMeansUsageControl">
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:hexBinary">
+                        <xsd:length value="2" />
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="PaymentFee">
+        <xsd:sequence>
+            <!-- paymentFeeAmount is the value of the fee being charged for the service. -->
+            <xsd:element name="paymentFeeAmount" type="xsd:unsignedShort" />
+            <!-- paymentFeeUnit is the unit in which the fee is expressed. -->
+            <xsd:element name="paymentFeeUnit" type="cm:PayUnit" />
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="EnvironmentalCharacteristics">
+        <xsd:sequence>
+            <xsd:element name="euroValue" type="cm:EuroValue" />
+            <xsd:element name="copValue" type="cm:CopValue" />
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <!-- EURO-Clases as defined in EC directive 88/77/EEC, annex 1 and in 91/542/EEC, 96/1/EC, 1999/96/EC, 2001/27/EC,
+    regulation No 595/2009 and for EEV in Section 6.2.1 of Annex I in EC directive 2005/55/EC. -->
+    <xsd:complexType name="EuroValue">
+        <xsd:choice>
+            <xsd:element name="noEntry">
+                <xsd:complexType/>
+            </xsd:element>
+            <xsd:element name="euro-1">
+                <xsd:complexType/>
+            </xsd:element>
+            <xsd:element name="euro-2">
+                <xsd:complexType/>
+            </xsd:element>
+            <xsd:element name="euro-3">
+                <xsd:complexType/>
+            </xsd:element>
+            <xsd:element name="euro-4">
+                <xsd:complexType/>
+            </xsd:element>
+            <xsd:element name="euro-5">
+                <xsd:complexType/>
+            </xsd:element>
+            <xsd:element name="euro-6">
+                <xsd:complexType/>
+            </xsd:element>
+            <xsd:element name="eev">
+                <xsd:complexType/>
+            </xsd:element>
+        </xsd:choice>
+    </xsd:complexType>
+
+    <xsd:complexType name="CopValue">
+        <xsd:choice>
+            <xsd:element name="noEntry">
+                <xsd:complexType/>
+            </xsd:element>
+            <xsd:element name="co2class1">   <!-- below 101 g/km -->
+                <xsd:complexType/>
+            </xsd:element>
+            <xsd:element name="co2class2">   <!-- 101 to 120 g/km -->
+                <xsd:complexType/>
+            </xsd:element>
+            <xsd:element name="co2class3">   <!-- 121 to 140 g/km -->
+                <xsd:complexType/>
+            </xsd:element>
+            <xsd:element name="co2class4">   <!-- 141 to 160 g/km -->
+                <xsd:complexType/>
+            </xsd:element>
+            <xsd:element name="co2class5">   <!-- 161 to 200 g/km -->
+                <xsd:complexType/>
+            </xsd:element>
+            <xsd:element name="co2class6">   <!-- 201 to 250 g/km -->
+                <xsd:complexType/>
+            </xsd:element>
+            <xsd:element name="co2class7">   <!-- above 250 g/km -->
+                <xsd:complexType/>
+            </xsd:element>
+        </xsd:choice>
+    </xsd:complexType>
+
+    <!-- noEntry (0), noEngine (1), petrolUnleaded (2), petrolLeaded (3),
+    diesel (4), lPG (5), battery (6), solar (7), hybrid (8), hydrogen (9) -->
+    <xsd:simpleType name="EngineCharacteristics">
+        <xsd:restriction base="xsd:unsignedByte">
+            <xsd:minInclusive value="0" />
+            <xsd:maxInclusive value="9" />
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <!-- noEntry (0) -->
+    <xsd:simpleType name="DescriptiveCharacteristics">
+        <xsd:restriction base="xsd:unsignedByte">
+            <xsd:minInclusive value="0" />
+            <xsd:maxInclusive value="0" />
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <!-- noEntry (0), airSuspension (1) -->
+    <xsd:simpleType name="FutureCharacteristics">
+        <xsd:restriction base="xsd:unsignedByte">
+            <xsd:minInclusive value="0" />
+            <xsd:maxInclusive value="1" />
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:complexType name="VehicleSpecificCharacteristics">
+        <xsd:sequence>
+            <xsd:element name="environmentalCharacteristics" type="cm:EnvironmentalCharacteristics" />
+            <xsd:element name="engineCharacteristics" type="cm:EngineCharacteristics" />
+            <xsd:element name="descriptiveCharacteristics" type="cm:DescriptiveCharacteristics" />
+            <xsd:element name="futureCharacteristics" type="cm:FutureCharacteristics" />
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="VehicleDimensions">
+        <xsd:sequence>
+            <xsd:element name="vehicleLengthOverall" type="xsd:unsignedByte" />
+            <xsd:element name="vehicleHeigthOverall" type="xsd:unsignedByte" />
+            <xsd:element name="vehicleWidthOverall" type="xsd:unsignedByte" />
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="VehicleWeightLimits">
+        <xsd:sequence>
+            <xsd:element name="vehicleMaxLadenWeight" type="xsd:unsignedShort" />
+            <xsd:element name="vehicleTrainMaximumWeight" type="xsd:unsignedShort" />
+            <xsd:element name="vehicleWeightUnladen" type="xsd:unsignedShort" />
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="VehicleAxles">
+        <xsd:sequence>
+            <xsd:element name="vehicleFirstAxleHeight" type="xsd:unsignedByte" />
+            <xsd:element name="vehicleAxlesNumber">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="tyreType">
+                            <xsd:complexType>
+                                <xsd:choice>
+                                    <xsd:element name="notSpecified">
+                                        <xsd:complexType/>
+                                    </xsd:element>
+                                    <xsd:element name="singleTyre">
+                                        <xsd:complexType/>
+                                    </xsd:element>
+                                    <xsd:element name="dualTyres">
+                                        <xsd:complexType/>
+                                    </xsd:element>
+                                </xsd:choice>
+                            </xsd:complexType>
+                        </xsd:element>
+                        <xsd:element name="numberOfAxles">
+                            <xsd:complexType>
+                                <xsd:sequence>
+                                    <xsd:element name="trailerAxles" type="cm:TrailerAxles" />
+                                    <xsd:element name="tractorAxles" type="cm:TractorAxles" />
+                                </xsd:sequence>
+                            </xsd:complexType>
+                        </xsd:element>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:simpleType name="TrailerAxles">
+        <xsd:restriction base="xsd:unsignedByte">
+            <xsd:minInclusive value="0" />
+            <xsd:maxInclusive value="7" />
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="TractorAxles">
+        <xsd:restriction base="xsd:unsignedByte">
+            <xsd:minInclusive value="0" />
+            <xsd:maxInclusive value="7" />
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:complexType name="TrailerCharacteristics">
+        <xsd:sequence>
+            <xsd:element name="trailerDetails" type="cm:TrailerDetails" />
+            <xsd:element name="trailerMaxLadenWeight" type="xsd:unsignedShort" />
+            <xsd:element name="trailerWeightUnladen" type="xsd:unsignedShort" />
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="TrailerDetails">
+        <xsd:sequence>
+            <xsd:element name="trailerType" type="cm:TrailerType" />
+            <xsd:element name="trailerAxles" type="cm:TrailerAxles" />
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <!-- notPresent (0), trailer (1), semitrailer (2) -->
+    <xsd:simpleType name="TrailerType">
+        <xsd:restriction base="xsd:unsignedByte">
+            <xsd:minInclusive value="0" />
+            <xsd:maxInclusive value="2" />
+        </xsd:restriction>
+    </xsd:simpleType>
+
+</xsd:schema>

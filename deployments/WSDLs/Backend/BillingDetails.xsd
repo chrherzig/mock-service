@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Version: 1.0
+Change history:
+0.1 (01.09.2016): Initial draft
+0.2 (13.09.2016): TransactionIdentifier added
+0.3 (27.10.2016): TransactionIdentifier removed
+0.4 (27.10.2016): Duration moved to Common.xsd
+0.5 (09.11.2016): 
+    - Unnecessary interleaving removed
+    - Namespaces updated
+0.6 (01.02.2017): Fixed namespaces for validation purpose
+1.0 (23.06.2017): Namespace prefix updated
+-->
+<xsd:schema
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:cm="http://tsystems.com/etccm/iso12855/common"
+    xmlns:bd="http://tsystems.com/etccm/iso12855/billingDetails"
+    targetNamespace="http://tsystems.com/etccm/iso12855/billingDetails"
+    elementFormDefault="qualified">
+
+    <xsd:import schemaLocation="Common.xsd" namespace="http://tsystems.com/etccm/iso12855/common" />
+
+    <xsd:element name="InfoExchangeBillingDetails">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="messageOriginator" type="cm:Provider" />
+                <xsd:element name="billingDetailsADUs" minOccurs="1" maxOccurs="unbounded" type="bd:BillingDetailsADU" />
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:complexType name="BillingDetailsADU">
+        <xsd:sequence>
+            <xsd:element name="billingDetailsId" type="cm:BillingDetailsId" />
+            <xsd:element name="tollContext" type="cm:Provider" />
+            <xsd:element name="userId" type="cm:UserId" />
+            <xsd:element name="period" type="cm:Period" />
+            <xsd:element name="billingDetailsAmount" type="bd:ExtendedPaymentAmountWithoutVatRate" />
+            <xsd:element name="usageDetails">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="contextName" type="xsd:string" />
+                        <xsd:element name="appliedUserClass" type="xsd:string" />
+                        <xsd:element name="perDeclaredVehicleClasses">
+                            <xsd:complexType>
+                                <xsd:sequence>
+                                    <xsd:element name="declaredVehicleClass" type="xsd:string" />
+                                    <xsd:element name="perUsedTimeClasses">
+                                        <xsd:complexType>
+                                            <xsd:sequence>
+                                                <xsd:element name="appliedTimeClass" type="xsd:string" />
+                                                <xsd:element name="costCenter" type="xsd:string" />
+                                                <xsd:element name="usageList" type="bd:UsageList" />
+                                            </xsd:sequence>
+                                        </xsd:complexType>
+                                    </xsd:element>
+                                </xsd:sequence>
+                            </xsd:complexType>
+                        </xsd:element>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <!-- The set of values in the list shall correspond to the set of tollDeclarationId values from all corresponding TollDeclarationADUs. -->
+            <xsd:element name="refTollDeclaration" minOccurs="1" maxOccurs="unbounded" type="cm:TollDeclarationId" />
+            <xsd:element name="paymentReference" minOccurs="0" type="xsd:string" />
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="ExtendedPaymentAmountWithoutVatRate">
+        <xsd:sequence>
+            <xsd:element name="paymentFeeAmount" type="cm:Int8Signed" />
+            <xsd:element name="paymentFeeUnit" type="cm:PayUnit" />
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="UsageList">
+        <xsd:sequence>
+            <xsd:element name="usageListEntry">
+                <xsd:complexType>
+                    <xsd:choice>
+                        <xsd:element name="forSectionedRoads">
+                            <xsd:complexType>
+                                <xsd:sequence>
+                                    <xsd:element name="howManyTimes" type="xsd:long" />
+                                    <xsd:element name="listOfSections" minOccurs="1" maxOccurs="unbounded" type="bd:Section" />
+                                </xsd:sequence>
+                            </xsd:complexType>
+                        </xsd:element>
+                        <xsd:element name="forTravellingInArea">
+                            <xsd:complexType>
+                                <xsd:sequence>
+                                    <xsd:element name="areaDisplayName" type="xsd:string" />
+                                    <!-- Length in meters. -->
+                                    <xsd:element name="accumulatedDistance" type="xsd:long" />
+                                    <!-- Shall be used if endOfAccumulation is used. -->
+                                    <xsd:element name="beginOfAccumulation" minOccurs="0" type="cm:GeneralizedTime" />
+                                    <!-- Shall be used if beginOfAccumulation is used. -->
+                                    <xsd:element name="endOfAccumulation" minOccurs="0" type="cm:GeneralizedTime" />
+                                </xsd:sequence>
+                            </xsd:complexType>
+                        </xsd:element>
+                        <xsd:element name="forStayingInArea">
+                            <xsd:complexType>
+                                <xsd:sequence>
+                                    <xsd:element name="areaDisplayName" type="xsd:string" />
+                                    <xsd:element name="qualifier" minOccurs="0">
+                                        <xsd:complexType>
+                                            <xsd:choice>
+                                                <xsd:element name="howOften" type="xsd:long" />
+                                                <xsd:element name="entranceTime" type="cm:GeneralizedTime" />
+                                            </xsd:choice>
+                                        </xsd:complexType>
+                                    </xsd:element>
+                                    <xsd:element name="stayedDuration" type="xsd:long" />
+                                    <xsd:element name="chargeUnit" type="bd:ChargeUnit" />
+                                </xsd:sequence>
+                            </xsd:complexType>
+                        </xsd:element>
+                        <xsd:element name="forCordonCrossings">
+                            <xsd:complexType>
+                                <xsd:sequence>
+                                    <xsd:element name="qualifier" minOccurs="0">
+                                        <xsd:complexType>
+                                            <xsd:choice>
+                                                <xsd:element name="howOften" type="xsd:long" />
+                                                <xsd:element name="entranceTime" type="cm:GeneralizedTime" />
+                                            </xsd:choice>
+                                        </xsd:complexType>
+                                    </xsd:element>
+                                    <xsd:element name="entranceChargeObject" type="bd:CordonEntryLocation" />
+                                    <xsd:element name="entranceChargeObjectName" minOccurs="0" type="xsd:string" />
+                                    <xsd:element name="exitChargeObject" type="bd:CordonExitLocation" />
+                                    <xsd:element name="exitTime" type="cm:GeneralizedTime" />
+                                </xsd:sequence>
+                            </xsd:complexType>
+                        </xsd:element>
+                        <xsd:element name="freeTextDetail">
+                            <xsd:complexType>
+                                <xsd:sequence>
+                                    <xsd:element name="textLanguage" type="cm:LanguageID" />
+                                    <xsd:element name="textDetail" type="xsd:string" />
+                                    <xsd:element name="fee" type="cm:ExtendedPaymentAmount" />
+                                    <xsd:element name="feeQualifier" type="bd:FeeQualifier" />
+                                </xsd:sequence>
+                            </xsd:complexType>
+                        </xsd:element>
+                    </xsd:choice>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="includedDiscounts" minOccurs="0" maxOccurs="unbounded">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="textLanguage" minOccurs="0" type="cm:LanguageID" />
+                        <xsd:element name="textDetail" minOccurs="0" type="xsd:string" />
+                        <xsd:element name="discount" type="cm:ExtendedPaymentAmount" />
+                        <xsd:element name="discountQualifier" type="bd:DiscountQualifier" />
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="externalCosts" minOccurs="0" type="bd:ExternalCosts" />
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <!-- standardCharge (0), tollSubstitute (1), belatedPayment (2), reimbursement (3) -->
+    <xsd:simpleType name="FeeQualifier">
+        <xsd:restriction base="xsd:unsignedByte">
+            <xsd:minInclusive value="0" />
+            <xsd:maxInclusive value="3" />
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <!-- Provides the reason of considered toll charger discount.
+    noDiscount (0), timeDiscount (1), vehicleDiscount (2), tripDiscount (3), userDiscount (4) -->
+    <xsd:simpleType name="DiscountQualifier">
+        <xsd:restriction base="xsd:unsignedByte">
+            <xsd:minInclusive value="0" />
+            <xsd:maxInclusive value="4" />
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:complexType name="ExternalCosts">
+        <xsd:sequence>
+            <xsd:element name="externalCostsAIR" minOccurs="0" type="cm:ExtendedPaymentAmount" />
+            <xsd:element name="externalCostsNOISE" minOccurs="0" type="cm:ExtendedPaymentAmount" />
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="Section">
+        <xsd:sequence>
+            <xsd:element name="chargeObjectId" type="cm:ChargeObjectId" />
+            <xsd:element name="tollEventId" type="cm:TollEventId" />
+            <xsd:element name="tollEventTime" type="cm:GeneralizedTime" />
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="ChargeUnit">
+        <xsd:sequence>
+            <!--xsd:element name="distance" type="Distance"/-->
+            <xsd:element name="time" type="cm:Duration" />
+            <!--xsd:element name="event" type="xsd:unsignedByte"/-->
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="CordonEntryLocation">
+        <xsd:sequence>
+            <xsd:element name="entryLocationId" type="xsd:unsignedInt" />
+            <xsd:element name="entryLocationClass" type="xsd:unsignedInt" />
+            <xsd:element name="applicableTimeClassIds" minOccurs="0" maxOccurs="unbounded" type="xsd:unsignedShort" />
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="CordonExitLocation">
+        <xsd:sequence>
+            <xsd:element name="exitLocationId" type="xsd:unsignedInt" />
+            <xsd:element name="exitLocationClass" minOccurs="0" maxOccurs="unbounded">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="locationClass" type="xsd:unsignedInt" />
+                        <xsd:element name="entryLocationIds" minOccurs="0" maxOccurs="unbounded" type="xsd:unsignedInt" />
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="applicableTimeClassIds" minOccurs="0" maxOccurs="unbounded" type="xsd:unsignedShort" />
+        </xsd:sequence>
+    </xsd:complexType>
+
+</xsd:schema>

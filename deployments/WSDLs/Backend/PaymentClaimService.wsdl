@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Version: 0.3
+Change history:
+0.1 (01.09.2016): Initial draft
+0.2 (09.11.2016): Namespaces updated
+0.3 (23.06.2017): Namespaces updated
+-->
+<wsdl:definitions
+    name="PaymentClaimService"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+    xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+    xmlns:cm="http://tsystems.com/etccm/iso12855/common"
+    xmlns:tns="http://tsystems.com/etccm/iso12855/paymentClaim"
+    targetNamespace="http://tsystems.com/etccm/iso12855/paymentClaim">
+
+    <wsdl:documentation>
+        Copyright (c) 2015 T-Systems International GmbH
+        All Rights Reserved
+
+        This software is the confidential and proprietary information of
+        T-Systems International GmbH ("Confidential Information").
+        You shall not disclose such Confidential Information and shall
+        use it only in accordance with the terms of the license agreement
+        you entered into with T-Systems International GmbH.
+
+        The claim payment phase starts once the billing details have been agreed between the Toll Charger
+        and the Toll Service Provider. The payment claim is based upon these agreed and possibly aggregated
+        billing details. The payment claim shall contain all the legal and fiscal information required,
+        according to each toll regime, to be used for invoicing between the Toll Charger, the Toll Service
+        Provider and the Service User.
+    </wsdl:documentation>
+
+    <wsdl:types>
+        <xsd:schema targetNamespace="http://tsystems.com/etccm/iso12855/paymentClaim">
+            <xsd:import schemaLocation="Common.xsd" namespace="http://tsystems.com/etccm/iso12855/common" />
+            <xsd:include schemaLocation="PaymentClaim.xsd" />
+        </xsd:schema>
+    </wsdl:types>
+
+    <wsdl:message name="paymentClaimRequest">
+        <wsdl:part name="request" element="tns:InfoExchangePaymentClaim" />
+    </wsdl:message>
+
+    <wsdl:message name="paymentClaimResponse">
+        <wsdl:part name="response" element="cm:response" />
+    </wsdl:message>
+
+    <wsdl:portType name="PaymentClaimServicePT">
+        <wsdl:operation name="sendPaymentClaim">
+            <wsdl:input message="tns:paymentClaimRequest" />
+            <wsdl:output message="tns:paymentClaimResponse" />
+        </wsdl:operation>
+    </wsdl:portType>
+
+    <wsdl:binding name="PaymentClaimServiceBinding" type="tns:PaymentClaimServicePT">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" />
+        <wsdl:operation name="sendPaymentClaim">
+            <soap:operation soapAction="http://tsystems.com/etccm/iso12855/PaymentClaimService/sendPaymentClaim" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+
+    <wsdl:service name="PaymentClaimService">
+        <wsdl:port name="PaymentClaimServicePort" binding="tns:PaymentClaimServiceBinding">
+            <soap:address location="http://localhost/PaymentClaimService" />
+        </wsdl:port>
+    </wsdl:service>
+
+</wsdl:definitions>

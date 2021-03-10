@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Version: 1.0
+Change history:
+0.1 (01.09.2016): Initial draft
+0.2 (13.09.2016): TransactionIdentifier added
+0.3 (27.10.2016): TransactionIdentifier removed
+0.4 (09.11.2016): 
+    - Unnecessary interleaving removed
+    - Namespaces updated
+0.5 (01.02.2017): Fixed namespaces for validation purpose
+0.6 (02.02.2017): Fixed typo
+1.0 (23.06.2017): Namespace prefix updated
+-->
+<xsd:schema
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:cm="http://tsystems.com/etccm/iso12855/common"
+    xmlns:pa="http://tsystems.com/etccm/iso12855/paymentAnnouncement"
+    targetNamespace="http://tsystems.com/etccm/iso12855/paymentAnnouncement"
+    elementFormDefault="qualified">
+
+    <xsd:import schemaLocation="Common.xsd" namespace="http://tsystems.com/etccm/iso12855/common" />
+
+    <xsd:element name="InfoExchangePaymentAnnouncement">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="messageOriginator" type="cm:Provider" />
+                <xsd:element name="paymentAnnouncementADUs" minOccurs="1" maxOccurs="unbounded" type="pa:PaymentAnnouncementADU" />
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:complexType name="PaymentAnnouncementADU">
+        <xsd:sequence>
+            <xsd:element name="paymentAnnouncementID">
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:long">
+                        <xsd:minInclusive value="0" />
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+            <!-- Date and time information on the date where the amount actually has been paid to the Toll Charger. -->
+            <xsd:element name="dueDate" type="cm:GeneralizedTime" />
+            <xsd:element name="totalamount" type="cm:ExtendedPaymentAmount" />
+            <xsd:element name="paymentStatus" type="pa:PaymentStatus" />
+            <xsd:element name="numberOfItems">
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:long">
+                        <xsd:minInclusive value="0" />
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="referenceDetailsList" minOccurs="0" maxOccurs="unbounded">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="referenceDetail">
+                            <xsd:complexType>
+                                <xsd:choice>
+                                    <xsd:element name="BillingDetailsId" type="cm:BillingDetailsId" />
+                                    <xsd:element name="TollDeclarationId" type="cm:TollDeclarationId" />
+                                    <xsd:element name="TollEventId" type="cm:TollEventId" />
+                                </xsd:choice>
+                            </xsd:complexType>
+                        </xsd:element>
+                        <xsd:element name="amount" type="cm:ExtendedPaymentAmount" />
+                        <!-- cash (0), prepaid (1), ec-creditcard (2), fleet-card (3), non-euro-currency-cash (4),
+                        non-euro-currency-prepaid (5), non-euro-currency-ec-creditcard (6), non-euro-currency-fleet-card (7),
+                        advance-payment-provider (8), debitcard (9), non-euro-currency-creditcard (10) -->
+                        <xsd:element name="paymentMeansType">
+                            <xsd:simpleType>
+                                <xsd:restriction base="xsd:unsignedByte">
+                                    <xsd:minInclusive value="0" />
+                                    <xsd:maxInclusive value="10" />
+                                </xsd:restriction>
+                            </xsd:simpleType>
+                        </xsd:element>
+                        <!-- Date when the amount of the referenceDetail was due according to contractual agreements. -->
+                        <xsd:element name="valueDate" type="cm:GeneralizedTime" />
+                        <!-- The interest that has to be paid if the referenceDetail was overdue. -->
+                        <xsd:element name="interestAmount" type="cm:ExtendedPaymentAmount" />
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <!-- Provides the option for attaching supporting documents, e.g. a PDF of a payment report. -->
+            <xsd:element name="attachment" minOccurs="0">
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:hexBinary">
+                        <xsd:minLength value="1" />
+                        <xsd:maxLength value="2147483647" />
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+            <!-- Provides the possibility of specifying a reference to this payment announcement. -->
+            <xsd:element name="paymentReference" minOccurs="0" type="xsd:string" />
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <!-- paid (0), new-overdue (1), not-yet-due-not-paid-yet (2), not-yet-due-paid (3),
+    due-paid (4), due-not-paid-yet (5), new-overdue-not-paid-yet (6), overdue (101) -->
+    <xsd:simpleType name="PaymentStatus">
+        <xsd:restriction base="xsd:unsignedByte">
+            <xsd:pattern value="[0-6]|101" />
+        </xsd:restriction>
+    </xsd:simpleType>
+
+</xsd:schema>

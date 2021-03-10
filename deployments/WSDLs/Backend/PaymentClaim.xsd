@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Version: 0.4
+Change history:
+0.1 (01.09.2016): Initial draft
+0.2 (09.11.2016): 
+    - Unnecessary interleaving removed
+    - Namespaces updated
+0.3 (01.02.2017): Fixed namespaces for validation purpose
+0.4 (23.06.2017): Namespace prefix updated
+-->
+<xsd:schema
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:cm="http://tsystems.com/etccm/iso12855/common"
+    xmlns:pc="http://tsystems.com/etccm/iso12855/paymentClaim"
+    targetNamespace="http://tsystems.com/etccm/iso12855/paymentClaim"
+    elementFormDefault="qualified">
+
+    <xsd:import schemaLocation="Common.xsd" namespace="http://tsystems.com/etccm/iso12855/common" />
+
+    <xsd:element name="InfoExchangePaymentClaim">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="messageOriginator" type="cm:Provider" />
+                <xsd:element name="informationSenderID" type="cm:Provider" />
+                <xsd:element name="informationrecipientID" type="cm:Provider" />
+                <xsd:element name="paymentClaimADUs" minOccurs="1" maxOccurs="unbounded" type="pc:PaymentClaimADU" />
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:complexType name="PaymentClaimADU">
+        <xsd:sequence>
+            <xsd:element name="paymentClaimId" type="xsd:integer" />
+            <xsd:element name="startDateTime" type="cm:GeneralizedTime" />
+            <xsd:element name="endDateTime" type="cm:GeneralizedTime" />
+            <xsd:element name="userId" type="cm:UserIdUnrestricted" />
+            <xsd:element name="paymentClaimAmount" type="cm:ExtendedPaymentAmount" />
+            <xsd:element name="paymentClaimStatus" type="pc:PaymentClaimStatus" />
+            <xsd:element name="typeOfFee" type="pc:TypeOfFee" />
+            <xsd:element name="referenceBillingDetailsList" minOccurs="0" maxOccurs="unbounded" type="cm:BillingDetailsId" />
+            <xsd:element name="actionCode" type="cm:ActionCode" />
+            <xsd:element name="paymentReference" minOccurs="0" type="xsd:string" />
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <!-- firstVersion (0), amendedVersion (1) -->
+    <xsd:simpleType name="PaymentClaimStatus">
+        <xsd:restriction base="xsd:unsignedByte">
+            <xsd:minInclusive value="0" />
+            <xsd:maxInclusive value="1" />
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <!-- toll (0), discount (1), creditnote (2), penalty (3), processingFee (4) -->
+    <xsd:simpleType name="TypeOfFee">
+        <xsd:restriction base="xsd:unsignedByte">
+            <xsd:minInclusive value="0" />
+            <xsd:maxInclusive value="4" />
+        </xsd:restriction>
+    </xsd:simpleType>
+
+</xsd:schema>

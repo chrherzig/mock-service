@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Version: 1.0
+Change history:
+0.1 (01.09.2016): Initial draft
+0.2 (13.09.2016): Request-/ProvideUserIdList changed from synchronous to asynchronous communication
+0.3 (09.11.2016): Namespaces updated
+0.4 (23.11.2016): Description of the interface moved to the Backend Interface Specification
+1.0 (23.06.2017): Namespaces updated
+-->
+<wsdl:definitions
+    name="RequestUserIdListService"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+    xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+    xmlns:cm="http://tsystems.com/etccm/iso12855/common"
+    xmlns:tns="http://tsystems.com/etccm/iso12855/userIdList"
+    targetNamespace="http://tsystems.com/etccm/iso12855/userIdList">
+
+    <wsdl:documentation>
+        Copyright (c) 2015 T-Systems International GmbH
+        All Rights Reserved
+
+        This software is the confidential and proprietary information of
+        T-Systems International GmbH ("Confidential Information").
+        You shall not disclose such Confidential Information and shall
+        use it only in accordance with the terms of the license agreement
+        you entered into with T-Systems International GmbH.
+    </wsdl:documentation>
+
+    <wsdl:types>
+        <xsd:schema targetNamespace="http://tsystems.com/etccm/iso12855/userIdList">
+            <xsd:import schemaLocation="Common.xsd" namespace="http://tsystems.com/etccm/iso12855/common" />
+            <xsd:include schemaLocation="UserIdList.xsd" />
+        </xsd:schema>
+    </wsdl:types>
+
+    <wsdl:message name="userIdListRequest">
+        <wsdl:part name="request" element="tns:InfoExchangeRequestUserIdList" />
+    </wsdl:message>
+
+    <wsdl:message name="userIdListResponse">
+        <wsdl:part name="response" element="cm:response" />
+    </wsdl:message>
+
+    <wsdl:portType name="RequestUserIdListServicePT">
+        <wsdl:operation name="requestUserIdList">
+            <wsdl:input message="tns:userIdListRequest" />
+            <wsdl:output message="tns:userIdListResponse" />
+        </wsdl:operation>
+    </wsdl:portType>
+
+    <wsdl:binding name="RequestUserIdListServiceBinding" type="tns:RequestUserIdListServicePT">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" />
+        <wsdl:operation name="requestUserIdList">
+            <soap:operation soapAction="http://tsystems.com/etccm/iso12855/RequestUserIdListService/requestUserIdList" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+
+    <wsdl:service name="RequestUserIdListService">
+        <wsdl:port name="RequestUserIdListServicePort" binding="tns:RequestUserIdListServiceBinding">
+            <soap:address location="http://localhost/RequestUserIdListService" />
+        </wsdl:port>
+    </wsdl:service>
+
+</wsdl:definitions>

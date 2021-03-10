@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Version: 0.3
+Change history:
+0.1 (01.09.2016): Initial draft
+0.2 (09.11.2016): Namespaces updated
+0.3 (23.06.2017): Namespaces updated
+-->
+<wsdl:definitions
+    name="BillingDetailsTcService"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+    xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+    xmlns:cm="http://tsystems.com/etccm/iso12855/common"
+    xmlns:tns="http://tsystems.com/etccm/iso12855/billingDetails"
+    targetNamespace="http://tsystems.com/etccm/iso12855/billingDetails">
+
+    <wsdl:documentation>
+        Copyright (c) 2015 T-Systems International GmbH
+        All Rights Reserved
+
+        This software is the confidential and proprietary information of
+        T-Systems International GmbH ("Confidential Information").
+        You shall not disclose such Confidential Information and shall
+        use it only in accordance with the terms of the license agreement
+        you entered into with T-Systems International GmbH.
+
+        A single billing detail may refer to one or several toll declarations. The generation of billing details
+        is based on the requirements defined for the toll regime. Thus a billing detail may consist of
+            — an elementary usage of a transport service (e.g. regarding the toll for a road section),
+            — several usages of a transport service within a given period of time (a day, a week, a month …), or
+            — several elementary usages of a transport service within a given journey.
+        The Toll Charger and Toll Service Provider can agree to aggregate the generated Billing details to
+        reduce the number of lines to be processed in their bookkeeping systems for handling the payment
+        claim between Toll Charger and Toll Service Provider. To avoid any rounding differences between the
+        VAT declarations for the local tax authorities of the Toll Charger and the VAT shown on the invoices to
+        the Service Users (SUs), the Toll Charger and the Toll Service Provider shall apply the same aggregation
+        methods for the exchanged and acknowledged aggregated billing details, which need to be bilaterally
+        agreed.
+
+        This WSDL defines the billing details which are send from the Toll Charger to the Toll Service Provider.
+    </wsdl:documentation>
+
+    <wsdl:types>
+        <xsd:schema targetNamespace="http://tsystems.com/etccm/iso12855/billingDetails">
+            <xsd:import schemaLocation="Common.xsd" namespace="http://tsystems.com/etccm/iso12855/common" />
+            <xsd:include schemaLocation="BillingDetails.xsd" />
+            <xsd:include schemaLocation="BillingDetailsTc.xsd" />
+        </xsd:schema>
+    </wsdl:types>
+
+    <wsdl:message name="billingDetailsRequest">
+        <wsdl:part name="request" element="tns:InfoExchangeBillingDetailsTc" />
+    </wsdl:message>
+
+    <wsdl:message name="billingDetailsResponse">
+        <wsdl:part name="response" element="cm:response" />
+    </wsdl:message>
+
+    <wsdl:portType name="BillingDetailsTcServicePT">
+        <wsdl:operation name="sendBillingDetails">
+            <wsdl:input message="tns:billingDetailsRequest" />
+            <wsdl:output message="tns:billingDetailsResponse" />
+        </wsdl:operation>
+    </wsdl:portType>
+
+    <wsdl:binding name="BillingDetailsTcServiceBinding" type="tns:BillingDetailsTcServicePT">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" />
+        <wsdl:operation name="sendBillingDetails">
+            <soap:operation soapAction="http://tsystems.com/etccm/iso12855/BillingDetailsTcService/sendBillingDetails" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+
+    <wsdl:service name="BillingDetailsTcService">
+        <wsdl:port name="BillingDetailsTcServicePort" binding="tns:BillingDetailsTcServiceBinding">
+            <soap:address location="http://localhost/BillingDetailsTcService" />
+        </wsdl:port>
+    </wsdl:service>
+
+</wsdl:definitions>

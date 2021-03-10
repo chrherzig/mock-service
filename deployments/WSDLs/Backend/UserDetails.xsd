@@ -1,0 +1,549 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Version: 1.2
+Change history:
+0.1 (01.09.2016): Initial draft
+0.2 (13.09.2016):
+    - TransactionIdentifier added
+    - Request-/ProvideUserDetails changed from synchronous to asynchronous communication
+0.3 (27.10.2016): TransactionIdentifier removed
+0.4 (28.10.2016): Changes to support the BAG 2012 interface:
+    - UserPostalAddress -> postcode: length restriction set from 6 to 10
+    - UserParameterResponse -> requestedUserParameter is now mandatory
+0.5 (09.11.2016): 
+    - requestId and inResponseToRequestId removed
+    - Unnecessary interleaving removed
+    - Namespaces updated
+0.6 (10.11.2016): Correction of the description of the element UserParameterResponse -> userParameterResponse
+0.7 (30.01.2017): Enumerations changed to choices to simplify the mapping into the ISO format
+0.8 (31.01.2017): UserPostalAddress -> postcode: length restriction set from 10 to 1-10
+0.9 (01.02.2017): Fixed namespaces for validation purpose, fixed date of 0.8 description
+1.0 (23.06.2017): Namespace prefix updated
+1.1 (02.02.2018): messageOriginator removed
+1.2 (09.02.2018): UserPostalAddress -> street and town are now mandatory
+-->
+<xsd:schema
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:cm="http://tsystems.com/etccm/iso12855/common"
+    xmlns:ud="http://tsystems.com/etccm/iso12855/userDetails"
+    targetNamespace="http://tsystems.com/etccm/iso12855/userDetails"
+    elementFormDefault="qualified">
+
+    <xsd:import schemaLocation="Common.xsd" namespace="http://tsystems.com/etccm/iso12855/common" />
+
+    <xsd:element name="InfoExchangeRequestUserDetails">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="informationSenderId" type="cm:Provider" />
+                <xsd:element name="informationRecipientId" type="cm:Provider" />
+                    <xsd:element name="userDetailsRequest" minOccurs="1" maxOccurs="unbounded">
+                        <xsd:complexType>
+                            <xsd:sequence>
+                                <xsd:element name="userId" type="cm:UserIdUnrestricted" />
+                                <xsd:element name="listOfParametersRequested" minOccurs="1" maxOccurs="unbounded" type="ud:UserParameterRequest" />
+                                <xsd:element name="userDetailsRequestReason" minOccurs="0" type="ud:UserDetailsRequestReason" />
+                                <!-- The requested user information shall related to the specified period in time, including
+                                cases where user information is varied during the period. If not specified, the currently
+                                available user information is meant to be requested. -->
+                                <xsd:element name="userInfoValidityPeriod" minOccurs="0" type="cm:Period" />
+                            </xsd:sequence>
+                        </xsd:complexType>
+                    </xsd:element>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+
+    <!-- userPostalAddress (0), contractSerialNumber (1), contractValidity (2), driverCharacteristics (3), eFC-ContextMark (4),
+    environmentalCharacteristics (5), engineCharacteristics (6), equipmentOBUId (7), equipmentStatus (8), paymentMeans (9),
+    paymentMeansBalance (10), paymentMeansUnit (11), personalAccountNumber (12), provider (13), receiptContract (14),
+    validityOfContract (15), vehicleAuthenticator (16), vehicleClass (17), vehicleDimensions (18), vehicleLicencePlateNumber (19),
+    vehicleIdentificationNumber (20), vehicleWeightLaden (21), vehicleWeightLimits (22), vehicleAxles (23), exhaustEmissionValues (24),
+    dieselEmissionValues (25), extendedUserPostalAddress (26), preferredUserLanguage (27) -->
+    <xsd:simpleType name="UserParameterRequest">
+        <xsd:restriction base="xsd:unsignedByte">
+            <xsd:minInclusive value="0" />
+            <xsd:maxInclusive value="27" />
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <!-- generalInterest (0), allowingCalculatingFee (1), incompleteCCCreadout (2), forwardingEnforcementTicket (3) -->
+    <xsd:simpleType name="UserDetailsRequestReason">
+        <xsd:restriction base="xsd:unsignedByte">
+            <xsd:minInclusive value="0" />
+            <xsd:maxInclusive value="3" />
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:element name="InfoExchangeProvideUserDetails">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="messageOriginator" type="cm:Provider" />
+                <xsd:element name="provideUserDetailsADUs" minOccurs="1" maxOccurs="unbounded" type="ud:ProvideUserDetailsADU" />
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:complexType name="ProvideUserDetailsADU">
+        <xsd:sequence>
+            <!-- Shall contain the UserId specified in the associated request ADU. -->
+            <xsd:element name="originaluserIdRequest" type="cm:UserIdUnrestricted" />
+            <!-- Shall contain the available information in the set {pan, contractSerialNumber, licencePlateNumber, obeID}
+            corresponding to the originaluserIdRequest.    If no user was found, the userId structure shall be empty. -->
+            <xsd:element name="userId" type="cm:UserIdUnrestricted" />
+            <xsd:element name="statusFlag" type="ud:UserStatus" />
+            <!-- Mandatory if statusFlag is 1 to 5. Shall not be used if status flag is 0, 6 or 7. -->
+            <xsd:element name="listOfUserParameters" minOccurs="0" maxOccurs="unbounded" type="ud:UserParameterResponse" />
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <!-- Provides general information on the status of the current status of the user.
+    noContractualRelation             (0) - no contract with TSP (user unknown) 
+    standardPrivateUserContract       (1) - contract as private user 
+    standardCommercialUserContract    (2) - contract as a commercial user 
+    tempExceptionListed               (3) - put on exception list, expect to remove it soon (e.g. because of insufficient credit on the account) 
+    permanentExceptionListed          (4) - put permanently on exception list 
+    contractClosed                    (5) - contract with the user has ended 
+    noStatus                          (6) - no status information available
+    notToBeDisclosed                  (7) - not disclosed because of privacy reasons -->
+    <xsd:simpleType name="UserStatus">
+        <xsd:restriction base="xsd:unsignedByte">
+            <xsd:minInclusive value="0" />
+            <xsd:maxInclusive value="7" />
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:complexType name="UserParameterResponse">
+        <xsd:sequence>
+            <xsd:element name="requestedUserParameter" type="ud:UserParameterRequest" />
+            <!-- Mandatory if userParameterStatus is 0. Shall not be used otherwise. -->
+            <xsd:element name="userParameterResponse" minOccurs="0" type="ud:UserParameterResponseDetails" />
+            <xsd:element name="userParameterStatus" type="ud:UserParameterStatus" />
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <!-- Specifies why a requested detail cannot be provided for an attribute.
+    userParameterAvailable         (0) - attribute is available
+    notAvailable                   (1) - attribute is not available
+    localPrivacyRules              (2) - attribute cannot be sent due to privacy rule
+    missingContractualAgreement    (3) - attribute cannot be sent by missing agreement -->
+    <xsd:simpleType name="UserParameterStatus">
+        <xsd:restriction base="xsd:unsignedByte">
+            <xsd:minInclusive value="0" />
+            <xsd:maxInclusive value="3" />
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:complexType name="UserParameterResponseDetails">
+        <xsd:choice>
+            <xsd:element name="userPostalAddress" type="ud:UserPostalAddress" />
+            <xsd:element name="contractSerialNumber" type="xsd:unsignedInt" />
+            <xsd:element name="contractValidity" type="ud:ContractValidity" />
+            <xsd:element name="driverCharacteristics" type="ud:DriverCharacteristics" />
+            <xsd:element name="eFC-ContextMark" type="cm:EFC-ContextMark" />
+            <xsd:element name="environmentalCharacteristics" type="cm:EnvironmentalCharacteristics" />
+            <xsd:element name="engineCharacteristics" type="cm:EngineCharacteristics" />
+            <xsd:element name="equipmentOBUId" type="cm:EquipmentOBUId" />
+            <xsd:element name="equipmentStatus" type="ud:EquipmentStatus" />
+            <xsd:element name="paymentMeans" type="cm:PaymentMeans" />
+            <xsd:element name="paymentMeansBalance" type="ud:PaymentMeansBalance" />
+            <xsd:element name="paymentMeansUnit" type="cm:PayUnit" />
+            <xsd:element name="personalAccountNumber" type="cm:PersonalAccountNumber" />
+            <xsd:element name="provider" type="cm:Provider" />
+            <xsd:element name="receiptContract" type="ud:ReceiptContract" />
+            <xsd:element name="validityOfContract" type="ud:ValidityOfContract" />
+            <xsd:element name="vehicleAuthenticator" type="xsd:hexBinary" />
+            <xsd:element name="vehicleClass" type="xsd:unsignedByte" />
+            <xsd:element name="vehicleDimensions" type="cm:VehicleDimensions" />
+            <xsd:element name="vehicleLicencePlateNumber" type="cm:LPN" />
+            <xsd:element name="vehicleIdentificationNumber" type="ud:vin" />
+            <xsd:element name="vehicleWeightLaden" type="xsd:unsignedShort" />
+            <xsd:element name="vehicleWeightLimits" type="cm:VehicleWeightLimits" />
+            <xsd:element name="vehicleAxles" type="cm:VehicleAxles" />
+            <xsd:element name="exhaustEmissionValues" type="ud:ExhaustEmissionValues" />
+            <xsd:element name="dieselEmissionValues" type="ud:DieselEmissionValues" />
+            <xsd:element name="extendedUserPostalAddress" type="ud:ExtendedUserPostalAddress" />
+            <xsd:element name="preferredUserLanguage" type="cm:LanguageID" />
+        </xsd:choice>
+    </xsd:complexType>
+
+    <xsd:complexType name="UserPostalAddress">
+        <xsd:sequence>
+            <xsd:element name="name">
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:string">
+                        <xsd:minLength value="1" />
+                        <xsd:maxLength value="60" />
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="company" minOccurs="0">
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:string">
+                        <xsd:minLength value="1" />
+                        <xsd:maxLength value="60" />
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="street">
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:string">
+                        <xsd:minLength value="1" />
+                        <xsd:maxLength value="60" />
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="postcode">
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:string">
+                        <xsd:minLength value="1" />
+                        <xsd:maxLength value="10" />
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="town">
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:string">
+                        <xsd:minLength value="1" />
+                        <xsd:maxLength value="60" />
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="country">
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:string">
+                        <xsd:minLength value="1" />
+                        <xsd:maxLength value="40" />
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="companyTaxIdentifier" minOccurs="0" type="xsd:string" />
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="ContractValidity">
+        <xsd:sequence>
+            <xsd:element name="contractRestrictions">
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:hexBinary">
+                        <xsd:length value="4" />
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="contractExpiryDate" type="cm:DateCompact" />
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="DriverCharacteristics">
+        <xsd:sequence>
+            <xsd:element name="driverClass" type="xsd:unsignedByte" />
+            <xsd:element name="tripPurpose" type="xsd:unsignedByte" />
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:simpleType name="EquipmentStatus">
+        <xsd:restriction base="cm:BitString">
+            <xsd:length value="16" />
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:complexType name="PaymentMeansBalance">
+        <xsd:choice>
+            <xsd:element name="positive">
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:unsignedInt">
+                        <xsd:minInclusive value="0" />
+                        <xsd:maxInclusive value="8388607" />
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="negative">
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:int">
+                        <xsd:minInclusive value="-8388608" />
+                        <xsd:maxInclusive value="-1" />
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+        </xsd:choice>
+    </xsd:complexType>
+
+    <xsd:complexType name="ReceiptContract">
+        <xsd:sequence>
+            <xsd:element name="sessionContractProvider" type="cm:Provider" />
+            <xsd:element name="sessionTypeOfContract">
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:hexBinary">
+                        <xsd:length value="2" />
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="sessionContractSerialNumber" type="xsd:unsignedInt" />
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="ValidityOfContract">
+        <xsd:sequence>
+            <xsd:element name="issuerRestrictions">
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:hexBinary">
+                        <xsd:length value="2" />
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="contractExpiryDate" type="cm:DateCompact" />
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:simpleType name="vin">
+        <xsd:restriction base="xsd:string">
+            <xsd:length value="17" />
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:complexType name="ExhaustEmissionValues">
+        <xsd:sequence>
+            <xsd:element name="unitType" type="ud:UnitType" />
+            <xsd:element name="emissionCO">
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:unsignedShort">
+                        <xsd:minInclusive value="0" />
+                        <xsd:maxInclusive value="32767" />
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="emissionHC" type="xsd:unsignedShort" />
+            <xsd:element name="emissionNOX" type="xsd:unsignedShort" />
+            <xsd:element name="emissionHCNOX" type="xsd:unsignedShort" />
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="UnitType">
+        <xsd:choice>
+            <xsd:element name="mg-km">
+                <xsd:complexType/>
+            </xsd:element>
+            <xsd:element name="mg-kWh">
+                <xsd:complexType/>
+            </xsd:element>
+        </xsd:choice>
+    </xsd:complexType>
+
+    <xsd:complexType name="DieselEmissionValues">
+        <xsd:sequence>
+            <xsd:element name="particulate">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="unitType" type="ud:UnitType" />
+                        <xsd:element name="value">
+                            <xsd:simpleType>
+                                <xsd:restriction base="xsd:unsignedShort">
+                                    <xsd:minInclusive value="0" />
+                                    <xsd:maxInclusive value="32767" />
+                                </xsd:restriction>
+                            </xsd:simpleType>
+                        </xsd:element>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="absorptionCoeff" type="xsd:unsignedShort" />
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <!-- All available informations shall be set. -->
+    <xsd:complexType name="ExtendedUserPostalAddress">
+        <xsd:sequence>
+            <xsd:element name="addresseeRoleDescriptor" minOccurs="0">
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:string">
+                        <xsd:minLength value="1" />
+                        <xsd:maxLength value="10" />
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="organisationName" minOccurs="0">
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:string">
+                        <xsd:minLength value="1" />
+                        <xsd:maxLength value="256" />
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="organisationUnit" minOccurs="0">
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:string">
+                        <xsd:minLength value="1" />
+                        <xsd:maxLength value="256" />
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="function" minOccurs="0">
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:string">
+                        <xsd:minLength value="1" />
+                        <xsd:maxLength value="256" />
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="formOfAddress" minOccurs="0">
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:string">
+                        <xsd:minLength value="1" />
+                        <xsd:maxLength value="50" />
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="qualification" minOccurs="0">
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:string">
+                        <xsd:minLength value="1" />
+                        <xsd:maxLength value="50" />
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="surname" minOccurs="0">
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:string">
+                        <xsd:minLength value="1" />
+                        <xsd:maxLength value="256" />
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="givenName" minOccurs="0">
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:string">
+                        <xsd:minLength value="1" />
+                        <xsd:maxLength value="256" />
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="deliveryServicePoint" minOccurs="0">
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:string">
+                        <xsd:minLength value="1" />
+                        <xsd:maxLength value="256" />
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="thoroughfare" minOccurs="0">
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:string">
+                        <xsd:minLength value="1" />
+                        <xsd:maxLength value="256" />
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="postCode" minOccurs="0">
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:string">
+                        <xsd:minLength value="1" />
+                        <xsd:maxLength value="10" />
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="town" minOccurs="0">
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:string">
+                        <xsd:minLength value="1" />
+                        <xsd:maxLength value="256" />
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="region" minOccurs="0">
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:string">
+                        <xsd:minLength value="1" />
+                        <xsd:maxLength value="256" />
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="country" minOccurs="0">
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:string">
+                        <xsd:minLength value="1" />
+                        <xsd:maxLength value="256" />
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="phoneInternationalDiallingCode" minOccurs="0">
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:string">
+                        <xsd:minLength value="1" />
+                        <xsd:maxLength value="5" />
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="phoneDiallingCode" minOccurs="0">
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:string">
+                        <xsd:minLength value="1" />
+                        <xsd:maxLength value="10" />
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="phoneSubscriberNumber" minOccurs="0">
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:string">
+                        <xsd:minLength value="1" />
+                        <xsd:maxLength value="20" />
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="mobileInternationalDiallingCode" minOccurs="0">
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:string">
+                        <xsd:minLength value="1" />
+                        <xsd:maxLength value="5" />
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="mobileDiallingCode" minOccurs="0">
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:string">
+                        <xsd:minLength value="1" />
+                        <xsd:maxLength value="10" />
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="mobileSubscriberNumber" minOccurs="0">
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:string">
+                        <xsd:minLength value="1" />
+                        <xsd:maxLength value="20" />
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="faxInternationalDiallingCode" minOccurs="0">
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:string">
+                        <xsd:minLength value="1" />
+                        <xsd:maxLength value="5" />
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="faxDiallingCode" minOccurs="0">
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:string">
+                        <xsd:minLength value="1" />
+                        <xsd:maxLength value="10" />
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="faxSubscriberNumber" minOccurs="0">
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:string">
+                        <xsd:minLength value="1" />
+                        <xsd:maxLength value="20" />
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="email" minOccurs="0">
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:string">
+                        <xsd:minLength value="1" />
+                        <xsd:maxLength value="256" />
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+
+</xsd:schema>

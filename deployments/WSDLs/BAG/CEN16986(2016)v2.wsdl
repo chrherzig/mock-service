@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions
+name="CENTS16986InterfaceWebService"
+xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/"
+xmlns:tns="http://standards.iso.org/iso/CENTS16986"
+targetNamespace="http://standards.iso.org/iso/CENTS16986">
+
+  <wsdl:types>
+    <xsd:schema targetNamespace="http://standards.iso.org/iso/CENTS16986" elementFormDefault="qualified">
+      <xsd:element name="sendApdu">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="Apdu" type="xsd:string" nillable="false" minOccurs="1" maxOccurs="1"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="sendApduResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="Apdu" type="xsd:string" nillable="false" minOccurs="0" maxOccurs="1"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+    </xsd:schema>
+  </wsdl:types>
+
+  <wsdl:message name="sendApdu">
+    <wsdl:part name="parameters" element="tns:sendApdu"/>
+  </wsdl:message>
+  <wsdl:message name="sendApduResponse">
+    <wsdl:part name="parameters" element="tns:sendApduResponse"/>
+  </wsdl:message>
+  <wsdl:portType name="CENTS16986ServicePT">
+    <wsdl:operation name="sendApdu">
+      <wsdl:input message="tns:sendApdu"/>
+      <wsdl:output message="tns:sendApduResponse"/>
+    </wsdl:operation>
+  </wsdl:portType>
+
+
+
+
+
+  <wsdl:binding name="wsWebServiceEndpoint" type="tns:CENTS16986ServicePT">
+    <soap12:binding transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="sendApdu">
+      <soap12:operation style="document" soapAction="http://standards.iso.org/iso/CENTS16986/ServicePT/sendApdu"/>
+      <wsdl:input>
+        <soap12:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+
+  <wsdl:service name="CENTS16986InterfaceWebService">
+    <wsdl:port name="wsWebServiceEndpoint" binding="tns:wsWebServiceEndpoint">
+      <soap12:address location="http://localhost/InterfaceUrl/ws"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

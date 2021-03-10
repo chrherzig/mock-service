@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<wsdl:definitions name="IsoGatewayService" targetNamespace="http://tsystems.com/gw/ws/iso" xmlns:tns="http://tsystems.com/gw/ws/iso"
+	xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+	xmlns:xmime="http://www.w3.org/2005/05/xmlmime">
+	<wsdl:documentation>
+ Copyright (c) 2015 T-Systems International GmbH 
+ All Rights Reserved 
+ 
+ This software is the confidential and proprietary information of 
+ T-Systems International GmbH ("Confidential Information"). 
+ You shall not disclose such Confidential Information and shall 
+ use it only in accordance with the terms of the license agreement 
+ you entered into with T-Systems International GmbH.
+ 
+		GatewayService ISO-12855 (implemented and called by SPGW and TCGW).
+		"xerData" contains ASN.1 XER encoded
+		ISO-12855 messages of types:
+		AckADU (as response to all ADU request types except for RetrieveUserDetailsADU requests)
+		ExceptionListADU (as request, greyLists are only logged)
+		ReportAbnormalOBEADU (as request)
+		RetrieveUserDetailsADU (as request)
+		ProvideUserDetailsADU (as response to a RetrieveUserDetailsADU request)
+		StatusADU (as request, only logged and not further
+		processed)
+		TollDeclarationADU (as request and as response to RetrieveTollDeclarationADU)
+		RetrieveTollDeclarationADU (as request)
+
+		Further extension of the processing capabilities shall be documented here.
+	</wsdl:documentation>
+	<wsdl:types>
+		<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://tsystems.com/gw/ws/iso"
+			elementFormDefault="qualified">
+
+			<!-- May contain ExceptionListADU, ReportAbnormalOBEADU, RetrieveUserDetailsADU or StatusADU -->
+			<xsd:element name="IsoRequest">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="xerData" type="xsd:string" />
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+
+			<!-- May contain AckADU or ProvideUserDetailsADU -->
+			<xsd:element name="IsoResponse">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="xerData" type="xsd:string" />
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+
+		</xsd:schema>
+	</wsdl:types>
+
+
+	<wsdl:message name="sendRequest">
+		<wsdl:part name="parameters" element="tns:IsoRequest" />
+	</wsdl:message>
+
+	<wsdl:message name="sendResponse">
+		<wsdl:part name="parameters" element="tns:IsoResponse" />
+	</wsdl:message>
+
+	<wsdl:portType name="IsoGatewayServicePT">
+		<wsdl:operation name="send">
+			<wsdl:input name="sendRequest" message="tns:sendRequest" />
+			<wsdl:output name="sendResponse" message="tns:sendResponse" />
+		</wsdl:operation>
+	</wsdl:portType>
+
+	<wsdl:binding name="IsoGatewayServiceBinding" type="tns:IsoGatewayServicePT">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" />
+		<wsdl:operation name="send">
+			<soap:operation soapAction="http://tsystems.com/spgw/IsoGatewayService/sendRequest" />
+			<wsdl:input name="sendRequest">
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output name="sendResponse">
+				<soap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+	</wsdl:binding>
+
+	<wsdl:service name="IsoGatewayService">
+		<wsdl:port name="IsoGatewayServicePort" binding="tns:IsoGatewayServiceBinding">
+			<soap:address location="http://localhost:8080/IsoGatewayService" />
+		</wsdl:port>
+	</wsdl:service>
+
+</wsdl:definitions>

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Version: 1.0
+Change history:
+0.1 (09.06.2017): Initial draft
+1.0 (23.06.2017): Namespaces updated
+-->
+<wsdl:definitions
+    name="DailyStatementService"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+    xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+    xmlns:cm="http://tsystems.com/etccm/iso12855/common"
+    xmlns:tns="http://tsystems.com/etccm/iso12855/dailyStatement"
+    targetNamespace="http://tsystems.com/etccm/iso12855/dailyStatement">
+
+    <wsdl:documentation>
+        Copyright (c) 2015 T-Systems International GmbH 
+        All Rights Reserved 
+
+        This software is the confidential and proprietary information of 
+        T-Systems International GmbH ("Confidential Information"). 
+        You shall not disclose such Confidential Information and shall 
+        use it only in accordance with the terms of the license agreement 
+        you entered into with T-Systems International GmbH.
+    </wsdl:documentation>
+
+    <wsdl:types>
+        <xsd:schema targetNamespace="http://tsystems.com/etccm/iso12855/dailyStatement">
+            <xsd:import schemaLocation="Common.xsd" namespace="http://tsystems.com/etccm/iso12855/common" />
+            <xsd:include schemaLocation="DailyStatement.xsd" />
+        </xsd:schema>
+    </wsdl:types>
+
+    <wsdl:message name="dailyStatementRequest">
+        <wsdl:part name="request" element="tns:InfoExchangeDailyStatement" />
+    </wsdl:message>
+
+    <wsdl:message name="dailyStatementResponse">
+        <wsdl:part name="response" element="cm:response" />
+    </wsdl:message>
+
+    <wsdl:portType name="DailyStatementServicePT">
+        <wsdl:operation name="sendDailyStatement">
+            <wsdl:input message="tns:dailyStatementRequest" />
+            <wsdl:output message="tns:dailyStatementResponse" />
+        </wsdl:operation>
+    </wsdl:portType>
+
+    <wsdl:binding name="DailyStatementServiceBinding" type="tns:DailyStatementServicePT">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" />
+        <wsdl:operation name="sendDailyStatement">
+            <soap:operation soapAction="http://tsystems.com/etccm/iso12855/DailyStatementService/sendDailyStatement" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+
+    <wsdl:service name="DailyStatementService">
+        <wsdl:port name="DailyStatementServicePort" binding="tns:DailyStatementServiceBinding">
+            <soap:address location="http://localhost/DailyStatementService" />
+        </wsdl:port>
+    </wsdl:service>
+
+</wsdl:definitions>

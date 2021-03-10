@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Version: 1.3
+Change history:
+0.1 (01.05.2017): Initial draft
+1.0 (23.06.2017): Extension to support IAP and Toll Charger BAG
+1.1 (27.07.2017): dateOfReception field added
+1.2 (02.02.2018): Added minOccurs="0" to the messageOriginator
+1.3 (02.03.2018): relatedMessageNumber added
+-->
+<xsd:schema
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:cm="http://tsystems.com/etccm/iso12855/common"
+    xmlns:ack="http://tsystems.com/etccm/iso12855/ack"
+    targetNamespace="http://tsystems.com/etccm/iso12855/ack"
+    elementFormDefault="qualified">
+
+    <xsd:import schemaLocation="Common.xsd" namespace="http://tsystems.com/etccm/iso12855/common" />
+
+    <xsd:element name="InfoExchangeAck">
+        <xsd:complexType>
+            <xsd:sequence>
+                <!-- Mandatory for messages send from Backend towards eTCCM. Not used for the other direction. -->
+                <xsd:element name="messageOriginator" minOccurs="0" type="cm:Provider" />
+                <!-- Mandatory for messages send from eTCCM towards Backend. Not used for the other direction. -->
+                <xsd:element name="informationSenderId" minOccurs="0" type="cm:Provider" />
+                <!-- Mandatory for messages send from eTCCM towards Backend. Not used for the other direction. -->            
+                <xsd:element name="informationRecipientId" minOccurs="0" type="cm:Provider" />
+                <xsd:element name="ackADU" type="ack:AckADU" />
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:complexType name="AckADU">
+        <xsd:sequence>
+            <xsd:element name="apduAckCode" type="ack:ApduReasonCode" />
+            <!-- References the sub message of one transaction with is acknowledged by using the same value as the current_message_number from the related request.
+            If this element is not set the acknowledge applies for all sub messages of one transaction. -->
+            <xsd:element name="relatedMessageNumber" minOccurs="0" type="ack:RelatedMessageNumber" />
+            <xsd:element name="dateOfReception" minOccurs="0" type="cm:GeneralizedTime" />
+            <xsd:element name="issues" minOccurs="0">
+                <xsd:complexType>
+                    <xsd:sequence minOccurs="1" maxOccurs="unbounded">
+                        <xsd:element name="SEQUENCE">
+                            <xsd:complexType>
+                                <xsd:sequence>
+                                    <!-- Shall have the same value as the position in ADU sequence of the APDU being acknowledged or 0 to indicate all ADUs in the APDU. -->
+                                    <xsd:element name="issueADUStruct" type="xsd:unsignedLong" />
+                                    <xsd:element name="issueLocation" minOccurs="0">
+                                        <xsd:simpleType>
+                                            <xsd:restriction base="xsd:string">
+                                                <xsd:minLength value="0" />
+                                                <xsd:maxLength value="512" />
+                                            </xsd:restriction>
+                                        </xsd:simpleType>
+                                    </xsd:element>
+                                    <xsd:element name="issueContent" minOccurs="0">
+                                        <xsd:simpleType>
+                                            <xsd:restriction base="xsd:string">
+                                                <xsd:minLength value="0" />
+                                                <xsd:maxLength value="1024" />
+                                            </xsd:restriction>
+                                        </xsd:simpleType>
+                                    </xsd:element>
+                                    <xsd:element name="issueCode" type="ack:AduReasonCode" />
+                                    <xsd:element name="issueText" minOccurs="0">
+                                        <xsd:simpleType>
+                                            <xsd:restriction base="xsd:string">
+                                                <xsd:minLength value="0" />
+                                                <xsd:maxLength value="1024" />
+                                            </xsd:restriction>
+                                        </xsd:simpleType>
+                                    </xsd:element>
+                                </xsd:sequence>
+                            </xsd:complexType>
+                        </xsd:element>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <!-- Provides status information for the whole APDU and is ADU type independent
+    obsoleteAPDU            (1)  - APDU is no longer valid or to be used
+    apduOK                  (2)  - APDU was accepted
+    apduNotOK               (3)  - APDU rejected
+    sequenceError           (4)  - If an APDU is sent out of the logical sequence
+    otherReason             (5)  - Bilateral agreement on APDU reason code
+    protocolVersionError    (6)  - APDU rejected because Protocol Version not supported
+    originatorRejected      (7)  - APDU rejected because Apdu Originator not known or no valid contract exists
+    recipientUnknown        (8)  - APDU rejected because Information Recipient not known (or no valid contract exists)
+    relatedApduUnknown      (9)  - APDU rejected because related APDU unknown or transaction finished
+    requestSentTooOften     (10) - APDU rejected because request was sent too often (processing of similar request still active) -->
+    <xsd:simpleType name="ApduReasonCode">
+        <xsd:restriction base="xsd:unsignedByte">
+            <xsd:minInclusive value="1" />
+            <xsd:maxInclusive value="10" />
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="RelatedMessageNumber">
+        <xsd:restriction base="xsd:int">
+            <xsd:minInclusive value="1" />
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <!-- If there is a need to bilaterally agree on issue codes, the ADUReasonCode “acceptedWithWarning” should be used together with an individual issueText.
+    invalidADU                                      (0)
+    notSupportedADU                                 (1)
+        2-99 reserved for future CEN and ISO use
+    trustObjectExpired                              (100)
+    trustObjectUnreadable                           (101)
+        102-199 reserved for future CEN and ISO use
+    contextDataChargeObjectIdRejected               (200)
+    contextDataChargeObjectDescriptionRejected      (201)
+    contextDataSystemTypeRejected                   (202)
+    contextDataChargeObjectTypeRejected             (203)
+    contextDataTollChargerRejected                  (204)
+    contextDataChargeObjectValidityStartRejected    (205)
+    contextDataChargeObjectValidityEndRejected      (206)
+        207-399 reserved for future CEN and ISO use
+    exceptionListsVersionRejected                   (400)
+    exceptionListsTypeRejected                      (401)
+    exceptionListsUserIdRejected                    (402)
+    exceptionListsBlockTypeRejected                 (403)
+    exceptionListsReasonCodeRejected                (404)
+    exceptionListsDateAndTimeRejected               (405)
+        406-499 reserved for future CEN and ISO use
+    abnormalObeUserIdRejected                       (500)
+    abnormalObeDateAndTimeRejected                  (501)
+    abnormalObeReasonCodeRejected                   (502)
+        503-699 reserved for future CEN and ISO use
+    billingDetailsIssuerIdRejected                  (700)
+    billingDetailsClaimIdRejected                   (701)
+    billingDetailsTollChargerIdRejected             (702)
+    billingDetailsContextIdRejected                 (703)
+    billingDetailsUserIdRejected                    (704)
+    billingDetailsPeriodRejected                    (705)
+    billingDetailsAmountRejected                    (706)
+    billingDetailsContextNameRejected               (707)
+    billingDetailsAppliedUserClassRejected          (708)
+    billingDetailsDeclaredVehicleClassRejected      (709)
+    billingDetailsAppliedTimeClassRejected          (710)
+    billingDetailsEntranceTimeRejected              (711)
+    billingDetailsEntranceChargeObjectRejected      (712)
+    billingDetailsIntermediateSectionRejected       (713)
+    billingDetailsExitChargeObjectRejected          (714)
+    billingDetailsExitTimeRejected                  (715)
+        716-799 reserved for future CEN and ISO use
+    claimRejectedByTSP                              (800)
+    claimApprovedByTSP                              (801)
+    paymentClaimIdRejected                          (802)
+    paymentClaimStartDateTimeRejected               (803)
+    paymentClaimEndDateTimeRejected                 (804)
+    paymentClaimUserIdRejected                      (805)
+    paymentClaimAmountRejected                      (806)
+    paymentClaimStatusRejected                      (807)
+    paymentClaimTypeOfFeeRejected                   (808)
+    paymentClaimRelatedApduIdRejected               (809)
+        810-1199 reserved for future CEN and ISO use
+    reportQAAccepted                                (1200)
+    reportQANotAccepted                             (1201)
+    paymentGuaranteeAccepted                        (1202)
+    smCCBackEndDataCheckingThresholdExceeded        (1203)
+        1204-2999 reserved for future CEN and ISO use
+    semanticError                                   (3000) - Every message (except AckADU) can be responded with a “semantic error” code when its semantics is not understood.
+        3001-3009 reserved for future CEN and ISO use
+    actionCodeNotSupported                          (3010)
+        3011-3999 reserved for future CEN and ISO use
+    acceptedWithWarning                             (4000) - Bilateral agreement on any other issue which semantics needs to be defined for the attributes issueLocation, issueContent and issueText. The ADU was accepted and will be processed. Further information will be provided by means of warnings. -->
+    <xsd:simpleType name="AduReasonCode">
+        <xsd:restriction base="xsd:short">
+            <xsd:minInclusive value="0" />
+            <xsd:maxInclusive value="4000" />
+        </xsd:restriction>
+    </xsd:simpleType>
+
+</xsd:schema>

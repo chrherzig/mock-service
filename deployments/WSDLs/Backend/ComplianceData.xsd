@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Version: 1.2
+Change history:
+0.1 (23.05.2017): Initial draft
+1.0 (23.06.2017): Namespace prefix updated
+1.1 (28.11.2017): Mandatory fields in ChargeReport, description and restrictions of StatusIndicator
+1.2 (02.02.2018): messageOriginator removed
+-->
+<xsd:schema
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:cm="http://tsystems.com/etccm/iso12855/common"
+    xmlns:cd="http://tsystems.com/etccm/iso12855/complianceData"
+    targetNamespace="http://tsystems.com/etccm/iso12855/complianceData"
+    elementFormDefault="qualified">
+
+    <xsd:import schemaLocation="Common.xsd" namespace="http://tsystems.com/etccm/iso12855/common" />
+
+    <xsd:element name="InfoExchangeRequestComplianceData">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="informationSenderId" type="cm:Provider" />
+                <xsd:element name="informationRecipientID" type="cm:Provider" />
+                <xsd:element name="complianceDataRequest" minOccurs="1"  maxOccurs="unbounded">
+                    <xsd:complexType>
+                        <xsd:sequence>
+                            <xsd:element name="userId" type="cm:UserIdUnrestricted" />
+                            <xsd:element name="startTime" type="cm:GeneralizedTime" />
+                            <xsd:element name="endTime" type="cm:GeneralizedTime" />
+                        </xsd:sequence>
+                    </xsd:complexType>
+                </xsd:element>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="InfoExchangeProvideComplianceData">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="messageOriginator" type="cm:Provider" />
+                <xsd:element name="tollDeclarationADU" type="cd:TollDeclarationADU" />
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:complexType name="TollDeclarationADU">
+        <xsd:sequence>
+            <xsd:element name="tollDeclarationId" type="cm:TollDeclarationId" />
+            <xsd:sequence minOccurs="0" maxOccurs="unbounded">
+                <xsd:element name="chargeReportList" type="cd:ChargeReport" />
+            </xsd:sequence>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="ChargeReport">
+        <xsd:sequence>
+            <xsd:element name="obeId" type="cm:ObeId" />
+            <xsd:element name="licensePlateNumber" type="cm:LPN" />
+            <xsd:element name="serviceProviderContract" type="cm:EFC-ContextMark" />
+            <xsd:element name="reportPeriod" type="cm:Period" />
+            <xsd:sequence minOccurs="0" maxOccurs="unbounded">
+                <xsd:element name="obeHistory" type="cd:OBEStatusHistory" />
+            </xsd:sequence>
+            <xsd:sequence minOccurs="0" maxOccurs="unbounded">
+                <xsd:element name="detectedChargeObject" type="cd:DetectedChargeObject" />
+            </xsd:sequence>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="DetectedChargeObject">
+        <xsd:sequence>
+            <xsd:element name="chargeObjectId" type="cm:ChargeObjectId" />
+            <xsd:element name="subObjectNumber" minOccurs="0">
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:unsignedInt" />
+                </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="timeWhenUsed" minOccurs="0" type="cm:GeneralizedTime" />
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="OBEStatusHistory">
+        <xsd:sequence>
+            <xsd:element name="statusIndicator" type="cd:StatusIndicator" />
+            <xsd:element name="timeWhenChanged" type="cd:Time" />
+            <xsd:element name="timeWhenActived" type="cd:Time" />
+            <xsd:element name="timeWhenObePowered" type="cd:Time" />
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    <!-- noGo (0), go (1) -->
+    <xsd:simpleType name="StatusIndicator">
+        <xsd:restriction base="xsd:unsignedByte">
+            <xsd:minInclusive value="0" />
+            <xsd:maxInclusive value="1" />
+        </xsd:restriction>
+    </xsd:simpleType>
+    
+    <!-- Unit is seconds since 1970 in UTC. -->
+    <xsd:simpleType name="Time">
+        <xsd:restriction base="xsd:unsignedInt" />
+    </xsd:simpleType>
+    
+</xsd:schema>

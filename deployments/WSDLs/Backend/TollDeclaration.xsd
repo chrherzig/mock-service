@@ -1,0 +1,357 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Version: 1.0
+Change history:
+0.1 (01.09.2016): Initial draft
+0.2 (13.09.2016): TransactionIdentifier added
+0.3 (27.10.2016): TransactionIdentifier removed
+0.4 (27.10.2016): Following elements added to support the old "DailyStatement" interface:
+    - ChargeReport -> timeOfReport
+    - AggregatedSingleTariffClassSession -> totalDistanceCovered
+0.5 (09.11.2016): 
+    - Unnecessary interleaving removed
+    - Namespaces updated
+0.6 (01.02.2017): Fixed namespaces for validation purpose
+1.0 (23.06.2017): Namespace prefix updated
+-->
+<xsd:schema
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:cm="http://tsystems.com/etccm/iso12855/common"
+    xmlns:td="http://tsystems.com/etccm/iso12855/tollDeclaration"
+    targetNamespace="http://tsystems.com/etccm/iso12855/tollDeclaration"
+    elementFormDefault="qualified">
+
+    <xsd:import schemaLocation="Common.xsd" namespace="http://tsystems.com/etccm/iso12855/common" />
+
+    <xsd:element name="InfoExchangeTollDeclaration">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="messageOriginator" type="cm:Provider" />
+                <xsd:element name="tollDeclarationADUs" minOccurs="1" maxOccurs="unbounded" type="td:TollDeclarationADU" />
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:complexType name="TollDeclarationADU">
+        <xsd:sequence>
+            <xsd:element name="tollDeclarationId" type="cm:TollDeclarationId" />
+            <xsd:element name="chargeReportList" minOccurs="1" maxOccurs="unbounded" type="td:ChargeReport" />
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="ChargeReport">
+        <xsd:sequence>
+            <xsd:element name="obeId" type="cm:ObeId" />
+            <xsd:element name="vehicleLPNr" type="cm:LPN" />
+            <xsd:element name="paymentMeans" type="cm:PaymentMeans" />
+            <xsd:element name="serviceProviderContract" type="cm:EFC-ContextMark" />
+            <xsd:element name="tollContext" type="cm:Provider" />
+            <xsd:element name="timeOfReport" minOccurs="0" type="cm:GeneralizedTime" />
+            <xsd:element name="reportPeriod" minOccurs="0" type="cm:Period" />
+            <xsd:element name="versionInfo" type="td:VersionId" />
+            <xsd:element name="usageStatementList" minOccurs="1" maxOccurs="unbounded" type="td:UsageStatement" />
+            <xsd:element name="chargeReportCounter" type="xsd:unsignedInt" />
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="VersionId">
+        <xsd:choice>
+            <!-- The version of the toll basic data at the timepoint of the toll recognition. -->
+            <xsd:element name="basicVersionId">
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:hexBinary">
+                        <xsd:maxLength value="255" />
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="extendedVersionId">
+                <xsd:complexType>
+                    <xsd:sequence minOccurs="0" maxOccurs="unbounded">
+                        <xsd:element name="SEQUENCE">
+                            <xsd:complexType>
+                                <xsd:sequence>
+                                    <xsd:element name="versionName">
+                                        <xsd:simpleType>
+                                            <xsd:restriction base="xsd:string">
+                                                <xsd:maxLength value="255" />
+                                            </xsd:restriction>
+                                        </xsd:simpleType>
+                                    </xsd:element>
+                                    <xsd:element name="value">
+                                        <xsd:simpleType>
+                                            <xsd:restriction base="xsd:string">
+                                                <xsd:maxLength value="255" />
+                                            </xsd:restriction>
+                                        </xsd:simpleType>
+                                    </xsd:element>
+                                </xsd:sequence>
+                            </xsd:complexType>
+                        </xsd:element>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+        </xsd:choice>
+    </xsd:complexType>
+
+    <xsd:complexType name="UsageStatement">
+        <xsd:sequence>
+            <xsd:element name="usageStatementId" type="xsd:unsignedShort" />
+            <xsd:element name="tollContext" type="cm:Provider" />
+            <xsd:element name="aggregatedSingleTariffClassSession" minOccurs="0" type="td:AggregatedSingleTariffClassSession" />
+            <xsd:element name="DetectedChargeObject" type="td:DetectedChargeObject" />
+            <xsd:element name="listOfRawUsageData" minOccurs="0" type="td:ListOfRawUsageData" />
+            <xsd:element name="additionalUsageInformation">
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:token">
+                        <xsd:enumeration value="454E544552" />                  <!-- ENTER -->
+                        <xsd:enumeration value="45584954" />                    <!-- EXIT -->
+                        <xsd:enumeration value="504153535F5448524F554748" />    <!-- PASS_THROUGH -->
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="AggregatedSingleTariffClassSession">
+        <xsd:sequence>
+            <xsd:element name="timePeriodCovered" type="cm:Period" />
+            <xsd:element name="currentTariffClass" minOccurs="0" type="td:TariffClassDescription" />
+            <xsd:element name="vehicleDescription" type="td:VehicleDescription" />
+            <xsd:element name="totalDistanceCovered" minOccurs="0" type="cm:Distance" />
+            <xsd:element name="feeExclVat" type="cm:PaymentFee" />
+            <xsd:element name="sumVat" type="cm:PaymentFee" />
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="TariffClassDescription">
+        <xsd:sequence>
+            <xsd:element name="tariffClassId" minOccurs="0" type="xsd:unsignedInt" />
+            <xsd:element name="localVehicleClass" type="xsd:unsignedShort" />
+            <xsd:element name="timeClass" type="xsd:unsignedShort" />
+            <xsd:element name="locationClass" type="xsd:unsignedInt" />
+            <xsd:element name="userClass" minOccurs="0" type="xsd:unsignedByte" />
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="VehicleDescription">
+        <xsd:sequence>
+            <xsd:element name="vehicleLPNr" minOccurs="0" type="cm:LPN" />
+            <xsd:element name="axles" type="cm:VehicleAxles" />
+            <xsd:element name="vehicleClass" type="xsd:unsignedByte" />
+            <xsd:element name="dimensions" minOccurs="0" type="cm:VehicleDimensions" />
+            <xsd:element name="specificCharacteristics" type="cm:VehicleSpecificCharacteristics" />
+            <xsd:element name="ladenWeight" minOccurs="0" type="xsd:unsignedShort" />
+            <xsd:element name="weightLimits" type="cm:VehicleWeightLimits" />
+            <xsd:element name="trailerCharacteristics" minOccurs="0" type="cm:TrailerCharacteristics" />
+            <xsd:element name="vehicleCurrentMaxTrainWeight" type="xsd:unsignedShort" />
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="VehicleDescriptionWithoutLPN">
+        <xsd:sequence>
+            <xsd:element name="axles" type="cm:VehicleAxles" />
+            <xsd:element name="vehicleClass" type="xsd:unsignedByte" />
+            <xsd:element name="dimensions" minOccurs="0" type="cm:VehicleDimensions" />
+            <xsd:element name="specificCharacteristics" type="cm:VehicleSpecificCharacteristics" />
+            <xsd:element name="ladenWeight" minOccurs="0" type="xsd:unsignedShort" />
+            <xsd:element name="weightLimits" type="cm:VehicleWeightLimits" />
+            <xsd:element name="trailerCharacteristics" minOccurs="0" type="cm:TrailerCharacteristics" />
+            <xsd:element name="vehicleCurrentMaxTrainWeight" type="xsd:unsignedShort" />
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="DetectedChargeObject">
+        <xsd:sequence>
+            <xsd:element name="chargeObjectId" type="cm:ChargeObjectId" />
+            <xsd:element name="subObjectNumber" minOccurs="0" type="xsd:unsignedInt" />
+            <xsd:element name="timeWhenUsed" type="cm:GeneralizedTime" />
+            <xsd:element name="currentTariffClass" type="td:TariffClassDescription" />
+            <xsd:element name="vehicleDescription" type="td:VehicleDescriptionWithoutLPN" />
+            <xsd:element name="obeStatus" type="td:SetMMIRq" />
+            <xsd:element name="feeExclVat" type="cm:PaymentFee" />
+            <xsd:element name="sumVat" type="cm:PaymentFee" />
+            <xsd:element name="chargeObjDetectionMode" type="td:DetectionMode" />
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <!-- ok            (0)   - operation / transaction successfully completed
+    nok                (1)   - operation / transaction not successfully completed
+    contactOperator    (2)   - e.g. due to low balance or battery
+    noSignalling       (255) - no signalling -->
+    <xsd:simpleType name="SetMMIRq">
+        <xsd:restriction base="xsd:unsignedByte">
+            <xsd:pattern value="[0-2]|255" />
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <!-- measured (0), inferred (1), lac (2) -->
+    <xsd:simpleType name="DetectionMode">
+        <xsd:restriction base="xsd:unsignedByte">
+            <xsd:minInclusive value="0" />
+            <xsd:maxInclusive value="2" />
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:complexType name="ListOfRawUsageData">
+        <xsd:sequence>
+            <xsd:element name="rawDataList">
+                <xsd:complexType>
+                    <xsd:sequence minOccurs="0" maxOccurs="unbounded">
+                        <xsd:element name="MeasuredRawData" type="td:MeasuredRawData" />
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="currentTariffClass" minOccurs="0" type="td:TariffClassDescription" />
+            <xsd:element name="vehicleDescription" minOccurs="0" type="td:VehicleDescription" />
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="MeasuredRawData">
+        <xsd:sequence>
+            <xsd:element name="measuredPosition" minOccurs="0" type="td:Position" />
+            <xsd:element name="timeWhenMeasured" minOccurs="0" type="cm:GeneralizedTime" />
+            <xsd:element name="nmeaData" minOccurs="0" type="td:NmeaData" />
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="Position">
+        <xsd:sequence>
+            <xsd:element name="longitude">
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:int">
+                        <xsd:minInclusive value="-2147483648" />
+                        <xsd:maxInclusive value="2147483647" />
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="latitude">
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:int">
+                        <xsd:minInclusive value="-2147483648" />
+                        <xsd:maxInclusive value="2147483647" />
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="altitude" minOccurs="0" type="td:Altitude" />
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="Altitude">
+        <xsd:sequence>
+            <xsd:element name="altitude">
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:int">
+                        <xsd:minInclusive value="-65536" />
+                        <xsd:maxInclusive value="65535" />
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+            <!-- DEFAULT metres -->
+            <xsd:element name="altUnit" minOccurs="0" type="td:DisUnit" />
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <!-- kilometres (0), miles (1), metres (2), yards (3), feet (4), decimetres (5), quartermetres (6) -->
+    <xsd:simpleType name="DisUnit">
+        <xsd:restriction base="xsd:unsignedByte">
+            <xsd:minInclusive value="0" />
+            <xsd:maxInclusive value="6" />
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:complexType name="NmeaData">
+        <xsd:sequence>
+            <xsd:element name="time" minOccurs="0">
+                <xsd:simpleType>
+                    <xsd:restriction base="cm:NumericString">
+                        <xsd:length value="9" />
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="status" minOccurs="0">
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:token">
+                        <xsd:pattern value="A|V" />
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="latitude" minOccurs="0">
+                <xsd:simpleType>
+                    <xsd:restriction base="cm:NumericString">
+                        <xsd:length value="8" />
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="latNS" minOccurs="0">
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:token">
+                        <xsd:pattern value="N|S" />
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="longitude" minOccurs="0">
+                <xsd:simpleType>
+                    <xsd:restriction base="cm:NumericString">
+                        <xsd:length value="9" />
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="longEW" minOccurs="0">
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:token">
+                        <xsd:pattern value="E|W" />
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="speed" minOccurs="0">
+                <xsd:simpleType>
+                    <xsd:restriction base="cm:NumericString">
+                        <xsd:length value="3" />
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="heading" minOccurs="0">
+                <xsd:simpleType>
+                    <xsd:restriction base="cm:NumericString">
+                        <xsd:length value="3" />
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="date" minOccurs="0">
+                <xsd:simpleType>
+                    <xsd:restriction base="cm:NumericString">
+                        <xsd:length value="6" />
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="signalIntegrity" minOccurs="0">
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:token">
+                        <xsd:pattern value="A|D|E|M|S|N" />
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="altitude" minOccurs="0">
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:token">
+                        <xsd:pattern value="[-0123456789]{5}" />
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="usedSatellites" minOccurs="0">
+                <xsd:simpleType>
+                    <xsd:restriction base="cm:NumericString">
+                        <xsd:length value="2" />
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="hdop" minOccurs="0">
+                <xsd:simpleType>
+                    <xsd:restriction base="cm:NumericString">
+                        <xsd:length value="3" />
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+
+</xsd:schema>

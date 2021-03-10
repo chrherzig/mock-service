@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Version: 1.1
+Change history:
+0.1 (11.11.2016): Initial draft
+0.2 (01.02.2017): Fixed namespaces for validation purpose
+1.0 (23.06.2017): Unnecessary namespaces removed
+1.1 (04.08.2017): extend exceptionListActionType with the value removeOBE (4)
+-->
+<xsd:schema
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    targetNamespace="http://tsystems.com/etccm/iso12855/exceptionList"
+    elementFormDefault="qualified">
+    
+    <xsd:include schemaLocation="ExceptionList.xsd" />
+
+    <!--
+    blackList              (1) - complete list of users for which TSP disclaims responsibility
+    whiteList              (2) - complete list of users for which TSP accepts responsibility
+    discountedList         (3) - complete list of users who are entitled to discounts
+    blackListDelta         (4) - delta list of black listed user. Delta lists must have the same exceptionListVersion as the complete list they are reference to
+    whiteListDelta         (5) - delta list of white listed user. Delta lists must have the same exceptionListVersion as the complete list they are reference to
+    discountedListDelta    (6) - delta list of discounted user. Delta lists must have the same exceptionListVersion as the complete list they are reference to -->
+    <xsd:simpleType name="ExceptionListType">
+        <xsd:restriction base="xsd:unsignedByte">
+            <xsd:minInclusive value="4" />
+            <xsd:maxInclusive value="4" />
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <!-- Shall indicate the limitations to which the user is subject to in the related toll domain.
+    allApplications                       (0) - the user is blocked for all possible DSRC applications
+    locallyBlocked                        (1) - the user is blocked for the Toll Charger receiving the information
+    blockedForSchemesRequiringOdometer    (2) - the user is blocked for all tolling schemata requiring an odometer
+    noLimits                              (3) - the user is not blocked for any DSRC application -->
+    <xsd:simpleType name="ExceptionListStatusType">
+        <xsd:restriction base="xsd:unsignedByte">
+            <xsd:minInclusive value="0" />
+            <xsd:maxInclusive value="2" />
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <!-- The reason code indicates why a user has been put on the exception list.
+    notToBeDisclosed                    (0)  - reason not to be disclosed
+    obeDeactivated                      (1)  - OBE has been deactivated
+    obeIsStolen                         (2)  - OBE has been stolen
+    temporaryTechnicalProblem           (3)  - temporary technical problems
+    suspicionOnTechnicalManipulation    (4)  - suspected technical manipulation
+    latePayment                         (5)  - user’s payments are late
+    noPayment                           (6)  - no user payments
+    contractHolderInsolvent             (7)  - contract holder insolvent
+    whiteListedUser                     (8)  - user in white lists
+    suOptOut                            (9)  - user optioned out of this toll domain
+    suTemporalSuspension                (10) - user requested temporal suspension
+    contractClosedByTSP                 (11) - contract closed by Toll Service Provider and OBE not yet returned
+    contractClosedBySU                  (12) - contract closed by user and OBE not yet returned
+    obeNotValid                         (13) - OBE not valid
+    obeIsLost                           (14) - lost OBE
+    obeNonExistent                      (15) - OBE not provided by TSP
+    obeOnStock                          (16) - OBE on stock and not yet assigned by TSP
+    obeReturnedEndOfContract            (17) - OBE returned after end of contract
+    obeReturnedMalfunction              (18) - OBE returned due to malfunction -->
+    <xsd:simpleType name="ExceptionListReasonType">
+        <xsd:restriction base="xsd:unsignedByte">
+            <!-- 0-18 without 8 -->
+            <xsd:pattern value="[0-7]|9|1[0-8]" />
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <!-- rejectOBE (1), invalidateOBE (2), acceptOBE (3), removeOBE (4) -->
+    <xsd:simpleType name="ExceptionListActionType">
+        <xsd:restriction base="xsd:unsignedByte">
+            <xsd:pattern value="1|2|4" />
+        </xsd:restriction>
+    </xsd:simpleType>
+
+</xsd:schema>
