@@ -1,0 +1,26 @@
+#!/bin/bash
+
+# This script is meant to be included in git repositories referenced for Source 2 Image builds. It should be stored in .s2i/bin/assemble
+# It overrules the default /usr/local/s2i/assemble script, but calls the original before adding extra statements.
+
+# Christopher Herzig <christopher.herzig@satellic.com> 2021/03/10
+#
+#
+
+
+set -eo pipefail
+
+#############################################################
+# Run the default assemble script
+
+/usr/local/s2i/assemble
+
+#############################################################
+# Retrieve and download SoapUI
+
+ARTEFACT_DOWNLOAD_URL="https://s3.amazonaws.com/downloads.eviware/soapuios/5.6.0/SoapUI-5.6.0-linux-bin.tar.gz"
+printf "Will download artefact $ARTEFACT_DOWNLOAD_URL to /deployments.\n\n"
+
+cd /deployments
+curl $ARTEFACT_DOWNLOAD_URL -O && printf "\nDone.\n"
+tar -xvf *.tar.gz
