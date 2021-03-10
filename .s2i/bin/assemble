@@ -22,6 +22,15 @@ ARTEFACT_DOWNLOAD_URL="https://s3.amazonaws.com/downloads.eviware/soapuios/5.6.0
 ARTEFACT_DOWNLOAD_URL="https://dl.eviware.com/soapuios/5.5.0/SoapUI-5.5.0-linux-bin.tar.gz"
 printf "Will download artefact $ARTEFACT_DOWNLOAD_URL to /deployments.\n\n"
 
+# unpack delivery
 cd /deployments
 curl $ARTEFACT_DOWNLOAD_URL -O && printf "\nDone.\n"
 tar -xvf *.tar.gz
+
+# housekeeping
+rm /deployments/*.tar.gz
+
+# modify mockservicerunner.sh
+cd /deployments/SoapUI*/bin
+sed -i 's/-Xms\([0-9]\+\)./-Xms${mock_xms}/g' mockservicerunner.sh
+sed -i 's/-Xmx\([0-9]\+\)./-Xmx${mock_xmx}/g' mockservicerunner.sh
