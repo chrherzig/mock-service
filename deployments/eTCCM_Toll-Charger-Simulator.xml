@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:soapui-project id="2ee0cd81-979a-4a04-89cf-fdb2b84a2218" activeEnvironment="Default" name="eTCCM_Toll_Charger_Simulator" resourceRoot="${projectDir}" soapui-version="5.2.1" abortOnError="false" runType="SEQUENTIAL" xmlns:con="http://eviware.com/soapui/config"><con:settings><con:setting id="WsdlSettings@cache-wsdls">false</con:setting></con:settings><con:interface xsi:type="con:WsdlInterface" id="43780664-e7da-4096-8cb2-e3afabe9ee0a" wsaVersion="NONE" name="IsoGatewayServiceBinding" type="wsdl" bindingName="{http://tsystems.com/gw/ws/iso}IsoGatewayServiceBinding" soapVersion="1_1" anonymous="optional" definition="${projectDir}/WSDLs/Viapass/IsoGatewayService.wsdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:endpoints><con:endpoint>http://localhost:8088/mockViapassIsoGatewayService</con:endpoint><con:endpoint>http://localhost:9090/tccm-toll-charger-adapter/service/AckService</con:endpoint><con:endpoint>http://localhost:9090/tccm-toll-charger-adapter/service/CEN16986Service</con:endpoint><con:endpoint>http://localhost:9090/tccm-toll-charger-adapter/service/RequestUserDetailsService</con:endpoint><con:endpoint>http://localhost:9090/tccm-toll-charger-adapter/service/RequestUserIdListService</con:endpoint><con:endpoint>http://localhost:9091/tccm-toll-charger-adapter/service/IsoGatewayService</con:endpoint></con:endpoints><con:operation id="df544a14-e30c-4a3d-bb58-178535cf2203" isOneWay="false" action="http://tsystems.com/spgw/IsoGatewayService/sendRequest" name="send" bindingOperationName="send" type="Request-Response" outputName="sendResponse" inputName="sendRequest" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="3c5e874b-637f-4669-97d0-2954afdac349" name="ViapassRequestUserDetails"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:9091/tccm-toll-charger-adapter/service/IsoGatewayService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:iso="http://tsystems.com/gw/ws/iso">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <iso:IsoRequest>
+         <iso:xerData><![CDATA[<InfoExchange><infoExchangeContent><apci><messageOriginator><countryCode>1001110000</countryCode><providerIdentifier>321</providerIdentifier></messageOriginator><informationSenderID><countryCode>1001110000</countryCode><providerIdentifier>321</providerIdentifier></informationSenderID><informationrecipientID><countryCode>1001110000</countryCode><providerIdentifier>12</providerIdentifier></informationrecipientID><contextID>1</contextID><messageIdentifier>100760481208910893535</messageIdentifier><aduType><retrieveUserDetailsADU/></aduType><numberofStructs>1</numberofStructs><messageDate>20170516153759.645Z</messageDate></apci><adu><retrieveUserDetailsADU><RetrieveUserDetails><userId><pan>ABCDEF12345678900000</pan><contractSerialNumber>12345</contractSerialNumber><licensePlateNumber><countryCode>1001110000</countryCode><alphabetIndicator><latinAlphabetNo1/></alphabetIndicator><licensePlateNumber>0EABCDEF123456789ABCDEF0000000</licensePlateNumber></licensePlateNumber><obeID><manufacturerId>54321</manufacturerId><equipmentOBUId>ABCDEF00</equipmentOBUId></obeID></userId><listOfParametersRequested><UserParameterRequest>0</UserParameterRequest><UserParameterRequest>1</UserParameterRequest></listOfParametersRequested></RetrieveUserDetails></retrieveUserDetailsADU></adu></infoExchangeContent></InfoExchange>]]]]>><![CDATA[</iso:xerData>
+      </iso:IsoRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://tsystems.com/spgw/IsoGatewayService/sendRequest"/><con:wsrmConfig version="1.2"/></con:call><con:call id="5c0cf901-cc1b-4b00-99e7-01c2302898bc" name="ViapassReportAbnormalObe"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:9091/tccm-toll-charger-adapter/service/IsoGatewayService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:iso="http://tsystems.com/gw/ws/iso">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <iso:IsoRequest>
+         <iso:xerData><![CDATA[<InfoExchange><infoExchangeContent><apci><messageOriginator><countryCode>1001110000</countryCode><providerIdentifier>321</providerIdentifier></messageOriginator><informationSenderID><countryCode>1001110000</countryCode><providerIdentifier>321</providerIdentifier></informationSenderID><informationrecipientID><countryCode>1001110000</countryCode><providerIdentifier>121</providerIdentifier></informationrecipientID><contextID>1</contextID><messageIdentifier>101517942869629934044</messageIdentifier><aduType><reportAbnormalOBEADU/></aduType><numberofStructs>1</numberofStructs><messageDate>20170516151550.284Z</messageDate></apci><adu><reportAbnormalOBEADU><userId><pan>ABCDEF12345678900000</pan><contractSerialNumber>12345</contractSerialNumber><licensePlateNumber><countryCode>1001110000</countryCode><alphabetIndicator><latinAlphabetNo1/></alphabetIndicator><licensePlateNumber>0EABCDEF123456789ABCDEF0000000</licensePlateNumber></licensePlateNumber><obeID><manufacturerId>54321</manufacturerId><equipmentOBUId>ABCDEF00</equipmentOBUId></obeID></userId><dateAndTime>20170516151550.284Z</dateAndTime><abnormalOBEReasonCode><AbnormalOBEReasonCode>0</AbnormalOBEReasonCode><AbnormalOBEReasonCode>1</AbnormalOBEReasonCode></abnormalOBEReasonCode></reportAbnormalOBEADU></adu></infoExchangeContent></InfoExchange>]]]]>><![CDATA[</iso:xerData>
+      </iso:IsoRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://tsystems.com/spgw/IsoGatewayService/sendRequest"/><con:wsrmConfig version="1.2"/></con:call><con:call id="618b1eb2-3674-4eb7-90c4-4078850a0df7" name="ViapassRequestAllUserDetails"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:9091/tccm-toll-charger-adapter/service/IsoGatewayService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:iso="http://tsystems.com/gw/ws/iso">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <iso:IsoRequest>
+         <iso:xerData><![CDATA[<InfoExchange><infoExchangeContent><apci><messageOriginator><countryCode>1001110000</countryCode><providerIdentifier>321</providerIdentifier></messageOriginator><informationSenderID><countryCode>1001110000</countryCode><providerIdentifier>321</providerIdentifier></informationSenderID><informationrecipientID><countryCode>1001110000</countryCode><providerIdentifier>12</providerIdentifier></informationrecipientID><contextID>1</contextID><messageIdentifier>100760481208910893535</messageIdentifier><aduType><retrieveUserDetailsADU/></aduType><numberofStructs>1</numberofStructs><messageDate>20170516153759.645Z</messageDate></apci><adu><retrieveUserDetailsADU><RetrieveUserDetails><userId/><listOfParametersRequested><UserParameterRequest>0</UserParameterRequest><UserParameterRequest>1</UserParameterRequest></listOfParametersRequested></RetrieveUserDetails></retrieveUserDetailsADU></adu></infoExchangeContent></InfoExchange>]]]]>><![CDATA[</iso:xerData>
+      </iso:IsoRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://tsystems.com/spgw/IsoGatewayService/sendRequest"/><con:wsrmConfig version="1.2"/></con:call><con:call id="dedf3f6d-0d50-43b4-b66d-27c2ee239b9d" name="ViapassRequestComplianceData"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:9091/tccm-toll-charger-adapter/service/IsoGatewayService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:iso="http://tsystems.com/gw/ws/iso">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <iso:IsoRequest>
+         <iso:xerData><![CDATA[<InfoExchange><infoExchangeContent><apci><messageOriginator><countryCode>1001010000</countryCode><providerIdentifier>10000</providerIdentifier></messageOriginator><informationSenderID><countryCode>1001010000</countryCode><providerIdentifier>321</providerIdentifier></informationSenderID><informationrecipientID><countryCode>1001010000</countryCode><providerIdentifier>321</providerIdentifier></informationrecipientID><contextID>1</contextID><messageIdentifier>140732228750300100001</messageIdentifier><aduType><retrieveTollDeclarationADU /></aduType><numberofStructs>1</numberofStructs><messageDate>20140806105127.506Z</messageDate></apci><adu><retrieveTollDeclarationADU><RetrieveTollDeclarations><userID><pan>ABCDEF12345678900000</pan><contractSerialNumber>1</contractSerialNumber><licensePlateNumber><countryCode>1001010000</countryCode><alphabetIndicator><latinAlphabetNo1 /></alphabetIndicator><licensePlateNumber>0EABCDEF123456789ABCDEF0000000</licensePlateNumber></licensePlateNumber><obeID><manufacturerId>54321</manufacturerId><equipmentOBUId>ABCDEF00</equipmentOBUId></obeID></userID><startTime>20140806105127.506Z</startTime><endTime>20140806105127.506Z</endTime></RetrieveTollDeclarations></retrieveTollDeclarationADU></adu></infoExchangeContent></InfoExchange>]]]]>><![CDATA[</iso:xerData>
+      </iso:IsoRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://tsystems.com/spgw/IsoGatewayService/sendRequest"/><con:wsrmConfig version="1.2"/></con:call><con:call id="42f70c8b-d897-48b8-9b09-48a050e37ae8" name="BagRequestUserDetails"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:9090/tccm-toll-charger-adapter/service/RequestUserDetailsService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:iso="http://tsystems.com/gw/ws/iso">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <iso:IsoRequest>
+         <iso:xerData><![CDATA[<InfoExchange><infoExchangeContent><apci><messageOriginator><countryCode>1001110000</countryCode><providerIdentifier>321</providerIdentifier></messageOriginator><informationSenderID><countryCode>1001110000</countryCode><providerIdentifier>321</providerIdentifier></informationSenderID><informationrecipientID><countryCode>1001110000</countryCode><providerIdentifier>12</providerIdentifier></informationrecipientID><contextID>1</contextID><messageIdentifier>100760481208910893535</messageIdentifier><aduType><retrieveUserDetailsADU/></aduType><numberofStructs>1</numberofStructs><messageDate>20170516153759.645Z</messageDate></apci><adu><retrieveUserDetailsADU><RetrieveUserDetails><userId><pan>ABCDEF12345678900000</pan><contractSerialNumber>12345</contractSerialNumber><licensePlateNumber><countryCode>1001110000</countryCode><alphabetIndicator><latinAlphabetNo1/></alphabetIndicator><licensePlateNumber>0EABCDEF123456789ABCDEF0000000</licensePlateNumber></licensePlateNumber><obeID><manufacturerId>54321</manufacturerId><equipmentOBUId>04ABCDEF00</equipmentOBUId></obeID></userId><listOfParametersRequested><UserParameterRequest>0</UserParameterRequest><UserParameterRequest>1</UserParameterRequest></listOfParametersRequested></RetrieveUserDetails></retrieveUserDetailsADU></adu></infoExchangeContent></InfoExchange>]]]]>><![CDATA[</iso:xerData>
+      </iso:IsoRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://tsystems.com/spgw/IsoGatewayService/sendRequest"/><con:wsrmConfig version="1.2"/></con:call></con:operation></con:interface><con:interface xsi:type="con:WsdlInterface" id="bdd5229e-2a51-4b9d-8ee8-35cdd3052fed" wsaVersion="NONE" name="wsWebServiceEndpoint" type="wsdl" bindingName="{http://standards.iso.org/iso/CENTS16986}wsWebServiceEndpoint" soapVersion="1_2" anonymous="optional" definition="WSDLs/BAG/CEN16986(2016)v2.wsdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:endpoints><con:endpoint>http://DHUB4987:8088/isoMockAsync</con:endpoint><con:endpoint>http://DHUB4987:8088/isoMockBillingDetails</con:endpoint><con:endpoint>http://DHUB4987:8088/isoMockBlackList</con:endpoint><con:endpoint>http://DHUB4987:8088/isoMockPaymentAnnouncement</con:endpoint><con:endpoint>http://DHUB4987:8088/isoMockProvideUserDetails</con:endpoint><con:endpoint>http://DHUB4987:8088/isoMockProvideUserIdList</con:endpoint><con:endpoint>http://DHUB4987:8088/isoMockSync</con:endpoint><con:endpoint>http://DHUB4987:8088/isoMockTollDeclaration</con:endpoint><con:endpoint>http://DHUB4987:8088/isoMockWhiteList</con:endpoint><con:endpoint>http://localhost/InterfaceUrl/ws</con:endpoint></con:endpoints><con:operation id="c494fcee-710d-42ac-a145-6917e62d90b3" isOneWay="false" action="http://standards.iso.org/iso/CENTS16986/ServicePT/sendApdu" name="sendApdu" bindingOperationName="sendApdu" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="cb32af32-40f2-4f85-ad33-7338b6635fa6" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost/InterfaceUrl/ws</con:endpoint><con:request><![CDATA[<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope" xmlns:cen="http://standards.iso.org/iso/CENTS16986">\r
+   <soap:Header/>\r
+   <soap:Body>\r
+      <cen:sendApdu>\r
+         <cen:Apdu>?</cen:Apdu>\r
+      </cen:sendApdu>\r
+   </soap:Body>\r
+</soap:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://standards.iso.org/iso/CENTS16986/CENTS16986ServicePT/sendApduRequest"/></con:call></con:operation></con:interface><con:testSuite id="e025c949-c4e4-41b7-9eb5-26aec8b9d0b1" name="AsyncAck"><con:settings/><con:runType>SEQUENTIAL</con:runType><con:testCase id="32c74dfc-f3ba-4e65-a375-75a109d0c9cf" failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="SendAck" searchProperties="true"><con:settings/><con:testStep type="delay" name="Delay" id="020f8556-a800-455e-8cfe-b1d5eb69e962"><con:settings/><con:config><delay>1000</delay></con:config></con:testStep><con:testStep type="groovy" name="Groovy Script" id="7edfe73a-93cc-4f19-80f1-a02b28430294"><con:settings/><con:config><script>date = new Date()
+log.info( "Send ACK from AsyncAck: " + date.format("HH:mm:ss.SSS") )
+</script></con:config></con:testStep><con:testStep type="request" name="ApduOk" id="2e457df0-f7cb-4b4b-8a45-dc0c01444fc3"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>wsWebServiceEndpoint</con:interface><con:operation>sendApdu</con:operation><con:request name="ApduOk" id="05d686dc-e4c2-4b88-b448-fa4c422c3997"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:20480/tccm-toll-charger-adapter/service/AckService</con:endpoint><con:request><![CDATA[<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope" xmlns:cen="http://standards.iso.org/iso/CENTS16986">
+   <soap:Header/>
+   <soap:Body>
+      <cen:sendApdu>
+         <cen:Apdu><![CDATA[<InfoExchange><infoExchangeContent><apci><aidIdentifier>0</aidIdentifier><apduOriginator><countryCode>1001010000</countryCode><providerIdentifier>30</providerIdentifier></apduOriginator><informationSenderID><countryCode>1001010000</countryCode><providerIdentifier>30</providerIdentifier></informationSenderID><informationrecipientID><countryCode>1001010000</countryCode><providerIdentifier>40</providerIdentifier></informationrecipientID><apduIdentifier>${apci_apduIdentifier}</apduIdentifier><apduDate>${apdu_Date}</apduDate></apci><adus><ackAdus><AckADU><apduIdentifier>${AckADU_apduIdentifier}</apduIdentifier><apduAckCode>2</apduAckCode></AckADU></ackAdus></adus></infoExchangeContent></InfoExchange>]]]]>><![CDATA[</cen:Apdu>
+      </cen:sendApdu>
+   </soap:Body>
+</soap:Envelope>]]></con:request><con:assertion type="SOAP Response" id="6a56f6bb-beb1-4215-94d6-9f011a98e69c"/><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:properties/></con:testCase><con:properties/></con:testSuite><con:mockService id="21243653-31a4-417b-9d80-aa4df31fd00e" port="8088" path="/mockViapassIsoGatewayService" host="localhost" name="IsoGatewayServiceMock" bindToHostOnly="false" docroot=""><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.mock.WsdlMockService@require-soap-action">true</con:setting><con:setting id="com.eviware.soapui.impl.wsdl.mock.WsdlMockService@require-soap-version">true</con:setting></con:settings><con:properties/><con:mockOperation name="send" id="31daea4c-91a1-485d-bcaf-363bcf969355" interface="IsoGatewayServiceBinding" operation="send"><con:settings/><con:defaultResponse>AduOk</con:defaultResponse><con:dispatchStyle>SCRIPT</con:dispatchStyle><con:dispatchPath><![CDATA[
+if (mockRequest.getRequestContent().contains("<aduType><tollDeclarationADU/></aduType>")) {
+        return "EmptyResponse";
+} else if (mockRequest.getRequestContent().contains("<aduType><provideUserDetailsADU/></aduType>")) {
+        return "EmptyResponse";
+}
+]]></con:dispatchPath><con:response name="AduOk" id="32a9dadd-e838-4dbe-b399-7b858b77b74f" httpResponseStatus="200" encoding="UTF-8"><con:settings/><con:responseContent><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:iso="http://tsystems.com/gw/ws/iso">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <iso:IsoResponse>
+         <iso:xerData><![CDATA[<InfoExchange><infoExchangeContent><apci><messageOriginator><countryCode>1001110000</countryCode><providerIdentifier>8001</providerIdentifier></messageOriginator><informationSenderID><countryCode>1001110000</countryCode><providerIdentifier>321</providerIdentifier></informationSenderID><informationrecipientID><countryCode>1001110000</countryCode><providerIdentifier>832</providerIdentifier></informationrecipientID><contextID>1</contextID><messageIdentifier>107793882000666339176</messageIdentifier><aduType><ackADU/></aduType><numberofStructs>1</numberofStructs><messageDate>20170606120443.721Z</messageDate></apci><adu><ackADU><aDUIdentifier>1</aDUIdentifier><ackCode><aDUOK/></ackCode></ackADU></adu></infoExchangeContent><infoExchangeAuthenticator/></InfoExchange>]]]]>><![CDATA[</iso:xerData>
+      </iso:IsoResponse>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://tsystems.com/spgw/IsoGatewayService/sendRequest"/></con:response><con:response name="AduNotOk" id="7373c790-dbd7-4e24-96eb-dd0db2177cdb" httpResponseStatus="200" encoding="UTF-8"><con:settings/><con:responseContent><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:iso="http://tsystems.com/gw/ws/iso">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <iso:IsoResponse>
+         <iso:xerData><![CDATA[<InfoExchange><infoExchangeContent><apci><messageOriginator><countryCode>1001110000</countryCode><providerIdentifier>8001</providerIdentifier></messageOriginator><informationSenderID><countryCode>1001110000</countryCode><providerIdentifier>321</providerIdentifier></informationSenderID><informationrecipientID><countryCode>1001110000</countryCode><providerIdentifier>832</providerIdentifier></informationrecipientID><contextID>1</contextID><messageIdentifier>107793882000666339176</messageIdentifier><aduType><ackADU/></aduType><numberofStructs>1</numberofStructs><messageDate>20170606120443.721Z</messageDate></apci><adu><ackADU><aDUIdentifier>1</aDUIdentifier><ackCode><aDUNotOK/></ackCode></ackADU></adu></infoExchangeContent><infoExchangeAuthenticator/></InfoExchange>]]]]>><![CDATA[</iso:xerData>
+      </iso:IsoResponse>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://tsystems.com/spgw/IsoGatewayService/sendRequest"/></con:response><con:response name="AduObsolete" id="7a8bcf31-6369-43da-9132-1ec0b4446282" httpResponseStatus="200" encoding="UTF-8"><con:settings/><con:responseContent><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:iso="http://tsystems.com/gw/ws/iso">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <iso:IsoResponse>
+         <iso:xerData><![CDATA[<InfoExchange><infoExchangeContent><apci><messageOriginator><countryCode>1001110000</countryCode><providerIdentifier>8001</providerIdentifier></messageOriginator><informationSenderID><countryCode>1001110000</countryCode><providerIdentifier>321</providerIdentifier></informationSenderID><informationrecipientID><countryCode>1001110000</countryCode><providerIdentifier>832</providerIdentifier></informationrecipientID><contextID>1</contextID><messageIdentifier>107793882000666339176</messageIdentifier><aduType><ackADU/></aduType><numberofStructs>1</numberofStructs><messageDate>20170606120443.721Z</messageDate></apci><adu><ackADU><aDUIdentifier>1</aDUIdentifier><ackCode><obsoleteADU/></ackCode></ackADU></adu></infoExchangeContent><infoExchangeAuthenticator/></InfoExchange>]]]]>><![CDATA[</iso:xerData>
+      </iso:IsoResponse>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://tsystems.com/spgw/IsoGatewayService/sendRequest"/></con:response><con:response name="EmptyResponse" id="17ab00f1-5b33-4dda-a879-c07e21cb83bf" httpResponseStatus="200" encoding="UTF-8"><con:settings/><con:responseContent><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:iso="http://tsystems.com/gw/ws/iso">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <iso:IsoResponse>
+         <iso:xerData/>
+      </iso:IsoResponse>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://tsystems.com/spgw/IsoGatewayService/sendRequest"/></con:response><con:dispatchConfig/></con:mockOperation></con:mockService><con:mockService id="6a8a98cb-7156-4e72-b582-b5c51b97db1b" port="8088" path="/isoMockAsync" host="DHUB4987" name="isoMockAsync"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.mock.WsdlMockService@require-soap-action">false</con:setting></con:settings><con:properties/><con:afterRequestScript>
+
+def tcContext = new com.eviware.soapui.support.types.StringToObjectMap()
+tcContext.put("apci_apduIdentifier", context.apci_apduIdentifier)
+tcContext.put("apdu_Date", context.apdu_Date)
+tcContext.put("AckADU_apduIdentifier", context.AckADU_apduIdentifier)
+
+
+def testCase = context.mockService.project.testSuites["AsyncAck"].testCases["SendAck"]
+date = new Date()
+log.info( "call asyncAck: " + date.format("HH:mm:ss.SSS") )
+
+if (context.tollDeclaration != null || context.billingDetail != null) {
+Thread.sleep(3000)
+} else {
+Thread.sleep(45000)
+}
+
+def runner = testCase.run( tcContext, false )
+</con:afterRequestScript><con:mockOperation name="sendApdu" id="c69b87c7-7ca5-452e-a69a-bb547811b7f8" interface="wsWebServiceEndpoint" operation="sendApdu"><con:settings/><con:defaultResponse>Response 1</con:defaultResponse><con:dispatchStyle>SCRIPT</con:dispatchStyle><con:dispatchPath>import java.text.SimpleDateFormat;
+import com.eviware.soapui.support.XmlHolder;
+
+date = new Date()
+log.info( "Enter to dispatch script asyncMock: " + date.format("HH:mm:ss.SSS") )
+
+def holder = new XmlHolder(mockRequest.requestContent )
+log.info( "defholder 1")
+CDATAXml = holder.getNodeValue("//*:Apdu").toString()
+log.info( "CDATAXml: " +  1)
+CDATAXmlHolder = new XmlHolder(CDATAXml)
+log.info( "CDATAXmlHolder: " + 1)
+
+Random random = new Random()
+SimpleDateFormat sdf = new SimpleDateFormat();
+sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+sdf.applyPattern("yyyyMMddHHmmss'Z'");
+Date dateNow = new Date()
+log.info( "Date 1")
+
+def apci_apduIdentifier=Math.abs(random.nextLong())
+log.info( "apci_apduIdentifier: " + apci_apduIdentifier)
+def apdu_Date=sdf.format(dateNow)
+log.info( "apdu_Date: " + apdu_Date)
+<!--def AckADU_apduIdentifier=CDATAXmlHolder.getNodeValue("//*:apci/apduIdentifier").toString()-->
+def parsedXML = new XmlSlurper().parseText(CDATAXml)
+def AckADU_apduIdentifier = parsedXML.'**'.find { it.name() == 'apduIdentifier' }
+log.info( "AckADU_apduIdentifier: " + AckADU_apduIdentifier)
+def tollDeclaration = parsedXML.'**'.find { it.name() == 'tollDeclarationADUs' }
+def billingDetail = parsedXML.'**'.find { it.name() == 'billingDetailsADUs' }
+
+context.apci_apduIdentifier=apci_apduIdentifier
+log.info( "apci_apduIdentifier: " + apci_apduIdentifier)
+context.apdu_Date=apdu_Date
+log.info( "aapdu_Date: " + apdu_Date)
+context.AckADU_apduIdentifier=AckADU_apduIdentifier
+log.info( "AckADU_apduIdentifier: " + AckADU_apduIdentifier)
+context.tollDeclaration=tollDeclaration
+context.billingDetail=billingDetail
+
+date = new Date()
+log.info( "EmptyResponse from asyncMock: " + date.format("HH:mm:ss.SSS") )
+
+return "EmptyResponse"</con:dispatchPath><con:response name="EmptyResponse" id="60df1d9a-e10b-44d1-97bc-63afb6f9a288" httpResponseStatus="200" encoding="UTF-8"><con:settings/><con:responseContent><![CDATA[<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope" xmlns:cen="http://standards.iso.org/iso/CENTS16986">
+   <soap:Header/>
+   <soap:Body>
+      <cen:sendApduResponse/>
+   </soap:Body>
+</soap:Envelope>]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://standards.iso.org/iso/CENTS16986/CENTS16986ServicePT/sendApduResponse"/></con:response><con:dispatchConfig/></con:mockOperation></con:mockService><con:mockService id="2f9215fe-4c76-418a-91b7-9b5b2dcbe07c" port="8088" path="/isoMockSync" host="DHUB4987" name="isoMockSync"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.mock.WsdlMockService@require-soap-action">false</con:setting></con:settings><con:properties/><con:mockOperation name="sendApdu" id="bd8d3c96-8263-4acd-ad45-115d19171cd6" interface="wsWebServiceEndpoint" operation="sendApdu"><con:settings/><con:defaultResponse>Response 1</con:defaultResponse><con:dispatchStyle>SCRIPT</con:dispatchStyle><con:dispatchPath>import java.text.SimpleDateFormat;
+import com.eviware.soapui.support.XmlHolder;
+
+def holder = new XmlHolder(mockRequest.requestContent )
+CDATAXml = holder.getNodeValue("//*:Apdu").toString()
+CDATAXmlHolder = new XmlHolder(CDATAXml)
+
+Random random = new Random()
+SimpleDateFormat sdf = new SimpleDateFormat();
+sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+sdf.applyPattern("yyyyMMddHHmmss'Z'");
+Date dateNow = new Date()
+
+def apci_apduIdentifier=Math.abs(random.nextLong())
+def apdu_Date=sdf.format(dateNow)
+def AckADU_apduIdentifier=CDATAXmlHolder.getNodeValue("//*:apci/apduIdentifier").toString()
+
+Thread.sleep(5000)
+
+requestContext.apci_apduIdentifier=apci_apduIdentifier
+requestContext.apdu_Date=apdu_Date
+requestContext.AckADU_apduIdentifier=AckADU_apduIdentifier
+
+return "ApduOk"
+</con:dispatchPath><con:response name="ApduOk" id="fbbb2b83-31ca-45c1-bc31-e7a3bc723861" httpResponseStatus="200" encoding="UTF-8"><con:settings/><con:responseContent><![CDATA[<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope" xmlns:cen="http://standards.iso.org/iso/CENTS16986">
+   <soap:Header/>
+   <soap:Body>
+      <cen:sendApduResponse>
+         <cen:Apdu><![CDATA[<InfoExchange><infoExchangeContent><apci><aidIdentifier>0</aidIdentifier><apduOriginator><countryCode>1001010000</countryCode><providerIdentifier>30</providerIdentifier></apduOriginator><informationSenderID><countryCode>1001010000</countryCode><providerIdentifier>30</providerIdentifier></informationSenderID><informationrecipientID><countryCode>1001010000</countryCode><providerIdentifier>40</providerIdentifier></informationrecipientID><apduIdentifier>${apci_apduIdentifier}</apduIdentifier><apduDate>${apdu_Date}</apduDate></apci><adus><ackAdus><AckADU><apduIdentifier>${AckADU_apduIdentifier}</apduIdentifier><apduAckCode>2</apduAckCode></AckADU></ackAdus></adus></infoExchangeContent></InfoExchange>]]]]>><![CDATA[</cen:Apdu>
+      </cen:sendApduResponse>
+   </soap:Body>
+</soap:Envelope>]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://standards.iso.org/iso/CENTS16986/CENTS16986ServicePT/sendApduResponse"/></con:response><con:dispatchConfig/></con:mockOperation></con:mockService><con:properties/><con:wssContainer/><con:oAuth2ProfileContainer/><con:sensitiveInformation/></con:soapui-project>
