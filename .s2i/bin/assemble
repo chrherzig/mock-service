@@ -3,7 +3,7 @@
 # This script is meant to be included in git repositories referenced for Source 2 Image builds. It should be stored in .s2i/bin/assemble
 # It overrules the default /usr/local/s2i/assemble script, but calls the original before adding extra statements.
 
-# Christopher Herzig <christopher.herzig@satellic.com> 2021/03/10
+# Christopher Herzig <christopher.herzig@t-systems-rs.com> 2021/03/10
 #
 #
 
